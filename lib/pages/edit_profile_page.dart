@@ -52,6 +52,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           ),
         );
+        nameController.text = "";
+        usernameController.text = "";
       } else {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(

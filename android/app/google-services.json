@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "223721923641",
+    "project_id": "tokowindatenun",
+    "storage_bucket": "tokowindatenun.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223721923641:android:970543ab146baeb420d9e8",
+        "android_client_info": {
+          "package_name": "com.tokowindatenun.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPKU8u9RinyCy6AW_6tyFGxQThR9IKmgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

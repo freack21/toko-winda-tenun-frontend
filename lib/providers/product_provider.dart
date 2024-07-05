@@ -12,12 +12,26 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getProducts() async {
+  Future<void> getProducts({String category = ""}) async {
     try {
-      List<ProductModel> products = await ProductService().getProducts();
+      List<ProductModel> products =
+          await ProductService().getProducts(category: category);
       _products = products;
+      notifyListeners(); // Menambahkan notifyListeners agar UI diperbarui
     } catch (e) {
       print(e);
     }
+  }
+
+  List<ProductModel> getRelatedProducts(String category) {
+    try {
+      List<ProductModel> relatedProducts = _products.where((product) {
+        return product.category!.name.toLowerCase() == category.toLowerCase();
+      }).toList();
+      return relatedProducts;
+    } catch (e) {
+      print(e);
+    }
+    return [];
   }
 }

@@ -67,7 +67,14 @@ class inputField extends StatelessWidget {
                     keyboardType: inputType,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "$label tidak boleh kosong!";
+                        return "${capitalizeFirstLowerRest(label)} tidak boleh kosong!";
+                      } else if (label.toLowerCase().contains("email") &&
+                          !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                              .hasMatch(value)) {
+                        return 'Harap masukkan email yang valid!';
+                      } else if (label.toLowerCase().contains("username") &&
+                          !RegExp(r'^[a-z_]+$').hasMatch(value)) {
+                        return 'Nama pengguna harus huruf kecil, tidak ada spasi, dan simbol "_" dan angka!';
                       }
                       return null;
                     },

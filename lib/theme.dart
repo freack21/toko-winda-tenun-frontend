@@ -56,3 +56,13 @@ TextStyle whiteTextStyle = GoogleFonts.poppins(
 TextStyle alertTextStyle = GoogleFonts.poppins(
   color: alertColor,
 );
+
+String capitalizeFirstLowerRest(String str) {
+  if (str.isEmpty) return str;
+  return str[0] + str.substring(1).toLowerCase();
+}
+
+String imageUrl(String? url) {
+  if (url!.contains("://")) return url;
+  return "https://songket.beetcodestudio.com/storage/$url";
+}

@@ -1,37 +1,31 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/product_model.dart';
 import 'package:frontend/pages/detail_chat_page.dart';
+import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/product_provider.dart';
+import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailPage extends StatefulWidget {
-  const ProductDetailPage({super.key});
+  final ProductModel product;
+  const ProductDetailPage({super.key, required this.product});
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  List images = [
-    'assets/image_shoes.png',
-    'assets/image_shoes.png',
-    'assets/image_shoes.png',
-  ];
-
-  List familiarShoes = [
-    'assets/image_shoes.png',
-    'assets/image_shoes2.png',
-    'assets/image_shoes3.png',
-    'assets/image_shoes4.png',
-    'assets/image_shoes5.png',
-    'assets/image_shoes6.png',
-    'assets/image_shoes7.png',
-    'assets/image_shoes8.png',
-  ];
-
   int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
     Future<void> showSuccessDialog() async {
       return showDialog(
         context: context,
@@ -126,18 +120,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       );
     }
 
-    Widget familiarShoesCard(String imageUrl) {
-      return Container(
-        width: 54,
-        height: 54,
-        margin: const EdgeInsets.only(
-          right: 16,
-        ),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(imageUrl),
+    Widget familiarShoesCard(ProductModel product_) {
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ProductDetailPage(product: product_)));
+        },
+        child: Container(
+          width: 54,
+          height: 54,
+          margin: const EdgeInsets.only(
+            right: 16,
           ),
-          borderRadius: BorderRadius.circular(6),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(imageUrl(product_.galleries?[0]?.url)),
+            ),
+            borderRadius: BorderRadius.circular(6),
+          ),
         ),
       );
     }
@@ -176,10 +178,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             height: 20,
           ),
           CarouselSlider(
-            items: images
+            items: widget.product.galleries!
                 .map(
-                  (image) => Image.asset(
-                    image,
+                  (image) => Image.network(
+                    imageUrl(image!.url),
                     width: MediaQuery.of(context).size.width,
                     height: 310,
                     fit: BoxFit.cover,
@@ -200,7 +202,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: images.map((e) {
+            children: widget.product.galleries!.map((e) {
               index++;
               return indicator(index);
             }).toList(),
@@ -237,14 +239,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Songket SMA",
+                          widget.product.name,
                           style: primaryTextStyle.copyWith(
                             fontSize: 18,
                             fontWeight: semiBold,
                           ),
                         ),
                         Text(
-                          "Songket",
+                          widget.product.category!.name,
                           style: secondaryTextStyle.copyWith(
                             fontSize: 12,
                           ),
@@ -254,14 +256,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      if ((1 + 1) == 2) {
+                      wishlistProvider.setProduct(widget.product);
+
+                      if (wishlistProvider.isWishlist(widget.product)) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: primaryColor,
                             content: Text(
-                                'Berhasil ditambahkan ke Produk Favorit!',
-                                textAlign: TextAlign.center,
-                                style: whiteTextStyle),
+                              'Berhasil ditambahkan ke Produk Favorit!',
+                              textAlign: TextAlign.center,
+                              style: whiteTextStyle,
+                            ),
                           ),
                         );
                       } else {
@@ -269,9 +274,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           SnackBar(
                             backgroundColor: alertColor,
                             content: Text(
-                                'Berhasil dihapus dari Produk Favorit!',
-                                textAlign: TextAlign.center,
-                                style: whiteTextStyle),
+                              'Berhasil dihapus dari Produk Favorit!',
+                              textAlign: TextAlign.center,
+                              style: whiteTextStyle,
+                            ),
                           ),
                         );
                       }
@@ -281,7 +287,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       height: 46,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: (1 + 1) == 2 ? primaryColor : subtitleColor),
+                          color: wishlistProvider.isWishlist(widget.product)
+                              ? primaryColor
+                              : subtitleColor),
                       child: Center(
                         child: Icon(
                           Icons.favorite,
@@ -316,7 +324,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     style: primaryTextStyle,
                   ),
                   Text(
-                    '\$100,09',
+                    '\$${widget.product.price}',
                     style: priceTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,
@@ -347,7 +355,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     height: 12,
                   ),
                   Text(
-                    "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vero est corrupti distinctio aspernatur beatae libero earum necessitatibus sint adipisci nihil unde ducimus minus provident possimus cupiditate perferendis aliquam dicta voluptate maxime et animi, alias atque. Doloribus ducimus quod atque sed.",
+                    widget.product.description,
                     style: subtitleTextStyle.copyWith(
                       fontWeight: light,
                     ),
@@ -383,12 +391,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: familiarShoes.map((image) {
+                      children: Provider.of<ProductProvider>(context)
+                          .getRelatedProducts(widget.product.category!.name)
+                          .map((product_) {
                         index++;
                         return Container(
                           margin: EdgeInsets.only(
                               left: index == 0 ? defaultMargin : 0),
-                          child: familiarShoesCard(image),
+                          child: familiarShoesCard(product_),
                         );
                       }).toList(),
                     ),
@@ -405,12 +415,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DetailChatPage(),
-                        ),
-                      );
+                      if (authProvider.user.role.contains("USER")) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailChatPage(
+                              product: widget.product,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: alertColor,
+                            content: Text(
+                              'Fitur tidak tersedia untuk admin!',
+                              textAlign: TextAlign.center,
+                              style: whiteTextStyle,
+                            ),
+                          ),
+                        );
+                      }
                     },
                     child: Container(
                       width: 48,
@@ -435,6 +460,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       height: 48,
                       child: TextButton(
                         onPressed: () {
+                          cartProvider.addCart(widget.product);
                           showSuccessDialog();
                         },
                         style: TextButton.styleFrom(

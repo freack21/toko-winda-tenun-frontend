@@ -1,12 +1,69 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/chat_bubble.dart';
+import 'package:frontend/models/product_model.dart';
+import 'package:frontend/models/user_model.dart';
+import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:provider/provider.dart';
 
-class DetailChatPage extends StatelessWidget {
-  const DetailChatPage({super.key});
+// ignore: must_be_immutable
+class DetailChatPage extends StatefulWidget {
+  ProductModel product;
+  final int? user_id;
+  final String? user_name;
+  final String? user_avatar;
+  DetailChatPage(
+      {super.key,
+      required this.product,
+      this.user_id,
+      this.user_name,
+      this.user_avatar});
+
+  @override
+  State<DetailChatPage> createState() => _DetailChatPageState();
+}
+
+class _DetailChatPageState extends State<DetailChatPage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  TextEditingController messageController = TextEditingController(text: '');
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    UserModel user = authProvider.user;
+
+    handleAddMessage() async {
+      if (messageController.text.isEmpty) return;
+
+      try {
+        firestore.collection('messages').add({
+          'user_id': widget.user_id ?? user.id,
+          'user_name': widget.user_name ?? user.name,
+          'user_avatar': widget.user_avatar ?? user.avatar,
+          'user_role': user.role,
+          'has_read': false,
+          'text': messageController.text,
+          'product': widget.product is UninitializedProductModel
+              ? {}
+              : widget.product.toJson(),
+          'created_at': DateTime.now().toString(),
+          'updated_at': DateTime.now().toString(),
+        }).then(
+          (value) => print('Pesan Berhasil Dikirim!'),
+        );
+      } catch (e) {
+        print('Pesan Gagal Dikirim!');
+      }
+
+      setState(() {
+        widget.product = UninitializedProductModel();
+        messageController.text = '';
+      });
+    }
+
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor2,
@@ -25,7 +82,9 @@ class DetailChatPage extends StatelessWidget {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
               ),
-              child: Image.asset("assets/image_shop_logo.png"),
+              child: widget.user_avatar != null
+                  ? Image.network(imageUrl(widget.user_avatar))
+                  : Image.asset("assets/image_shop_logo.png"),
             ),
             const SizedBox(
               width: 12,
@@ -34,18 +93,18 @@ class DetailChatPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Toko Winda Tenun",
+                  widget.user_name ?? "Toko Winda Tenun",
                   style: primaryTextStyle.copyWith(
                       fontWeight: medium, fontSize: 16),
                 ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Online",
-                  style: subtitleTextStyle.copyWith(
-                      fontWeight: light, fontSize: 14),
-                )
+                // const SizedBox(
+                //   height: 4,
+                // ),
+                // Text(
+                //   "Online",
+                //   style: subtitleTextStyle.copyWith(
+                //       fontWeight: light, fontSize: 14),
+                // )
               ],
             )
           ],
@@ -70,8 +129,8 @@ class DetailChatPage extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                "assets/image_shoes.png",
+              child: Image.network(
+                imageUrl(widget.product.galleries![0]!.url),
                 width: 54,
               ),
             ),
@@ -84,7 +143,7 @@ class DetailChatPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Lorem, ipsum dolor.",
+                    widget.product.name,
                     style: primaryTextStyle,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -92,7 +151,7 @@ class DetailChatPage extends StatelessWidget {
                     height: 4,
                   ),
                   Text(
-                    "\$57,15",
+                    "\$${widget.product.price}",
                     style: priceTextStyle.copyWith(fontWeight: semiBold),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -107,11 +166,18 @@ class DetailChatPage extends StatelessWidget {
               height: 22,
               decoration:
                   BoxDecoration(shape: BoxShape.circle, color: primaryColor),
-              child: Center(
-                child: Text(
-                  "✕",
-                  style:
-                      whiteTextStyle.copyWith(fontSize: 10, fontWeight: bold),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.product = UninitializedProductModel();
+                  });
+                },
+                child: Center(
+                  child: Text(
+                    "✕",
+                    style:
+                        whiteTextStyle.copyWith(fontSize: 10, fontWeight: bold),
+                  ),
                 ),
               ),
             )
@@ -125,27 +191,30 @@ class DetailChatPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 15),
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(color: whiteColor),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 15,
+          widget.product is UninitializedProductModel
+              ? const SizedBox()
+              : Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(color: whiteColor),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        productPreview(),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                      ],
                     ),
-                    productPreview(),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                  ],
-                ),
-              )),
+                  )),
           Container(
-            margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+            padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+            color: transparentColor,
             child: Row(
               children: [
                 Expanded(
@@ -160,6 +229,8 @@ class DetailChatPage extends StatelessWidget {
                     ),
                     child: Center(
                       child: TextFormField(
+                        controller: messageController,
+                        style: blackTextStyle,
                         decoration: InputDecoration.collapsed(
                           hintText: "Ketik pesan..",
                           hintStyle: subtitleTextStyle,
@@ -171,41 +242,61 @@ class DetailChatPage extends StatelessWidget {
                 const SizedBox(
                   width: 15,
                 ),
-                Container(
-                  width: 45,
-                  height: 45,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                  decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Image.asset(
-                    "assets/icon_submit.png",
-                    color: whiteColor,
+                GestureDetector(
+                  onTap: handleAddMessage,
+                  child: Container(
+                    width: 45,
+                    height: 45,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 12),
+                    decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Image.asset(
+                      "assets/icon_submit.png",
+                      color: whiteColor,
+                    ),
                   ),
                 )
               ],
             ),
           ),
+          Padding(
+              padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ))
         ],
       );
     }
 
     Widget body() {
-      return ListView(
-        padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-        children: const [
-          ChatBubble(
-            text: "Apa barangnya masih tersedia?",
-            isSender: true,
-          ),
-          ChatBubble(
-            text:
-                "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia ipsam repellendus nostrum mollitia laboriosam, aperiam perspiciatis corrupti doloribus expedita architecto.",
-            isSender: false,
-          ),
-        ],
-      );
+      return StreamBuilder<QuerySnapshot>(
+          stream: firestore
+              .collection('messages')
+              .where('user_id', isEqualTo: widget.user_id ?? user.id)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            var chatDocuments = snapshot.data!.docs;
+
+            chatDocuments.sort((a, b) {
+              return (DateTime.parse(a['created_at']))
+                  .compareTo(DateTime.parse(b['created_at']));
+            });
+
+            return ListView.builder(
+              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              itemCount: chatDocuments.length,
+              itemBuilder: (context, index) {
+                return ChatBubble(
+                  chatDocument: chatDocuments[index],
+                );
+              },
+            );
+          });
     }
 
     return Scaffold(

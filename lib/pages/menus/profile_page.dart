@@ -53,10 +53,19 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(
                 width: 12,
               ),
-              const Icon(
-                Icons.logout_rounded,
-                color: Colors.red,
-                size: 24,
+              GestureDetector(
+                onTap: () async {
+                  if (await authProvider.logout(token: user.token)) {
+                    if (!context.mounted) return;
+                    Navigator.popUntil(context, ModalRoute.withName("/"));
+                    Navigator.pushNamed(context, "/sign-in");
+                  }
+                },
+                child: const Icon(
+                  Icons.logout_rounded,
+                  color: Colors.red,
+                  size: 24,
+                ),
               )
             ],
           ),

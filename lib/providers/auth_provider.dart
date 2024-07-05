@@ -1,15 +1,40 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
   late UserModel _user;
 
-  UserModel get user => _user;
+  UserModel get user {
+    return _user;
+  }
 
-  set user(UserModel user) {
+  Future<UserModel> get userAwait async {
+    await _loadUserFromPrefs();
+    return _user;
+  }
+
+  AuthProvider() {
+    _loadUserFromPrefs();
+  }
+
+  Future<void> _loadUserFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userData = prefs.getString('user');
+    if (userData != null) {
+      _user = UserModel.fromJson(jsonDecode(userData));
+      notifyListeners();
+    }
+  }
+
+  Future<void> setUser(UserModel user) async {
     _user = user;
     notifyListeners();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', jsonEncode(user.toJson()));
   }
 
   Future<bool> register({
@@ -28,10 +53,9 @@ class AuthProvider with ChangeNotifier {
         password: password,
       );
 
-      _user = user;
+      setUser(user);
       return true;
     } catch (e) {
-      print("Error di authprovider");
       print(e);
       return false;
     }
@@ -42,12 +66,14 @@ class AuthProvider with ChangeNotifier {
     String password = "",
   }) async {
     try {
+      print("Coba Login");
+
       UserModel user = await AuthService().login(
         email: email,
         password: password,
       );
 
-      _user = user;
+      setUser(user);
       return true;
     } catch (e) {
       print(e);
@@ -65,6 +91,7 @@ class AuthProvider with ChangeNotifier {
 
       if (isLoggedOut) {
         _user.token = "";
+        setUser(_user);
         return true;
       }
     } catch (e) {
@@ -100,10 +127,9 @@ class AuthProvider with ChangeNotifier {
         token: token,
       );
 
-      _user = user;
+      setUser(user);
       return true;
     } catch (e) {
-      print("Error di authprovider");
       print(e);
       return false;
     }

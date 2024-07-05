@@ -1,14 +1,27 @@
+// ignore_for_file: camel_case_types
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/product_model.dart';
+import 'package:frontend/pages/detail_chat_page.dart';
+import 'package:frontend/pages/product_detail_page.dart';
+import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class productCard extends StatelessWidget {
-  const productCard({super.key});
+  final ProductModel product;
+  const productCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/product-detail");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProductDetailPage(product: product)));
       },
       child: Container(
         width: 215,
@@ -22,8 +35,8 @@ class productCard extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            Image.asset(
-              "assets/image_shoes.png",
+            Image.network(
+              imageUrl(product.galleries?[0]?.url),
               width: 215,
               height: 130,
               fit: BoxFit.cover,
@@ -37,7 +50,7 @@ class productCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Hiking",
+                    product.category!.name,
                     style: secondaryTextStyle.copyWith(fontSize: 12),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -45,7 +58,7 @@ class productCard extends StatelessWidget {
                     height: 6,
                   ),
                   Text(
-                    "COURT VISION 2.0",
+                    product.name,
                     style: blackTextStyle.copyWith(
                         fontSize: 18, fontWeight: semiBold),
                     overflow: TextOverflow.ellipsis,
@@ -54,7 +67,7 @@ class productCard extends StatelessWidget {
                     height: 6,
                   ),
                   Text(
-                    "\$58,67",
+                    "\$${product.price}",
                     style: priceTextStyle.copyWith(fontWeight: medium),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -69,13 +82,18 @@ class productCard extends StatelessWidget {
 }
 
 class productTile extends StatelessWidget {
-  const productTile({super.key});
+  final ProductModel product;
+
+  const productTile({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/product-detail");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProductDetailPage(product: product)));
       },
       child: Container(
         margin: EdgeInsets.only(
@@ -91,8 +109,8 @@ class productTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                "assets/image_shoes.png",
+              child: Image.network(
+                imageUrl(product.galleries?[0]?.url),
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,
@@ -106,14 +124,14 @@ class productTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Football",
+                    product.category!.name,
                     style: secondaryTextStyle.copyWith(fontSize: 12),
                   ),
                   const SizedBox(
                     height: 6,
                   ),
                   Text(
-                    "Predator 20.3 Fire Ground",
+                    product.name,
                     style: primaryTextStyle.copyWith(
                         fontWeight: semiBold, fontSize: 20),
                   ),
@@ -121,7 +139,7 @@ class productTile extends StatelessWidget {
                     height: 6,
                   ),
                   Text(
-                    "\$64,47",
+                    "\$${product.price}",
                     style: priceTextStyle.copyWith(fontWeight: medium),
                   ),
                 ],
@@ -135,13 +153,47 @@ class productTile extends StatelessWidget {
 }
 
 class chatTile extends StatelessWidget {
-  const chatTile({super.key});
+  final DocumentSnapshot chatDocument;
+
+  const chatTile({super.key, required this.chatDocument});
+
+  String _getTimeAgo(DateTime createdAt) {
+    DateTime now = DateTime.now();
+    DateTime createdDateTime = createdAt;
+    Duration difference = now.difference(createdDateTime);
+
+    if (difference.inMinutes < 2) {
+      return 'Baru saja';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} menit';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} jam';
+    } else {
+      return DateFormat('dd MMM yyyy').format(createdDateTime);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/chat");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailChatPage(
+                      product: UninitializedProductModel(),
+                      user_id: authProvider.user.role.contains("ADMIN")
+                          ? chatDocument['user_id']
+                          : null,
+                      user_avatar: authProvider.user.role.contains("ADMIN")
+                          ? chatDocument['user_avatar']
+                          : null,
+                      user_name: authProvider.user.role.contains("ADMIN")
+                          ? chatDocument['user_name']
+                          : null,
+                    )));
       },
       child: Container(
         margin: EdgeInsets.only(
@@ -165,7 +217,9 @@ class chatTile extends StatelessWidget {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
-                  child: Image.asset("assets/image_shop_logo.png"),
+                  child: authProvider.user.role.contains("ADMIN")
+                      ? Image.network(imageUrl(chatDocument['user_avatar']))
+                      : Image.asset("assets/image_shop_logo.png"),
                 ),
                 const SizedBox(
                   width: 12,
@@ -176,14 +230,20 @@ class chatTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Toko Winda Tenun",
+                        authProvider.user.role == "USER"
+                            ? "Toko Winda Tenun"
+                            : chatDocument['user_name'],
                         style: primaryTextStyle.copyWith(
-                            fontWeight: medium, fontSize: 15),
+                          fontWeight: medium,
+                          fontSize: 15,
+                        ),
                       ),
                       Text(
-                        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos harum magni fuga eum architecto atque nesciunt ut nihil. Rem, veritatis!",
+                        chatDocument['text'],
                         style: subtitleTextStyle.copyWith(
-                            fontWeight: light, fontSize: 14),
+                          fontWeight: light,
+                          fontSize: 14,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       )
                     ],
@@ -193,7 +253,7 @@ class chatTile extends StatelessWidget {
                   width: 12,
                 ),
                 Text(
-                  "Baru saja",
+                  _getTimeAgo(DateTime.parse(chatDocument['created_at'])),
                   style: subtitleTextStyle.copyWith(fontSize: 12),
                 )
               ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/product_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -15,19 +16,38 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   @override
-  void initState() async {
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuth();
+    });
+
     super.initState();
+  }
 
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    UserModel user = authProvider.user;
+  Future<void> _checkAuth() async {
+    Timer(const Duration(seconds: 1), () async {
+      try {
+        ProductProvider productProvider =
+            Provider.of<ProductProvider>(context, listen: false);
+        await productProvider.getProducts();
 
-    if (await authProvider.check(
-      token: user.token,
-    )) {
-      if (!context.mounted) Navigator.popAndPushNamed(context, '/home');
-    } else {
-      if (!context.mounted) Navigator.popAndPushNamed(context, '/sign-in');
-    }
+        if (!mounted) return;
+        AuthProvider authProvider =
+            Provider.of<AuthProvider>(context, listen: false);
+        UserModel user = await authProvider.userAwait;
+
+        if (await authProvider.check(token: user.token)) {
+          if (!mounted) return;
+          Navigator.popAndPushNamed(context, '/home');
+          return;
+        }
+      } catch (e) {
+        print(e);
+      }
+
+      if (!mounted) return;
+      Navigator.popAndPushNamed(context, '/sign-in');
+    });
   }
 
   @override

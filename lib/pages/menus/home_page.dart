@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/product_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +22,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     UserModel user = authProvider.user;
+
+    ProductProvider productProvider = Provider.of<ProductProvider>(context);
 
     Widget header() {
       return Container(
@@ -144,12 +149,14 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(
                     width: 15,
                   ),
-                  productCard(),
-                  productCard(),
-                  productCard(),
-                  productCard(),
-                  productCard(),
-                  productCard(),
+                  Row(
+                    children: productProvider.products
+                        .getRange(0, min(5, productProvider.products.length))
+                        .map(
+                          (product) => productCard(product: product),
+                        )
+                        .toList(),
+                  ),
                   const SizedBox(
                     width: 15,
                   ),
@@ -161,7 +168,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    Widget newArrivalsSection() {
+    Widget allProductSection() {
       return Container(
         margin: const EdgeInsets.only(top: 30),
         child: Column(
@@ -170,7 +177,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: defaultMargin),
               child: Text(
-                "Produk Terbaru",
+                "Semua Produk",
                 style: primaryTextStyle.copyWith(
                     fontSize: 22, fontWeight: semiBold),
               ),
@@ -178,10 +185,13 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 14,
             ),
-            productTile(),
-            productTile(),
-            productTile(),
-            productTile(),
+            Column(
+              children: productProvider.products
+                  .map(
+                    (product) => productTile(product: product),
+                  )
+                  .toList(),
+            ),
             const SizedBox(
               height: 15,
             ),
@@ -196,7 +206,7 @@ class _HomePageState extends State<HomePage> {
           header(),
           categoryChooser(),
           popularProductSection(),
-          newArrivalsSection()
+          allProductSection()
         ],
       ),
     );
