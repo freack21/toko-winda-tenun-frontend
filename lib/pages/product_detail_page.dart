@@ -324,7 +324,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     style: primaryTextStyle,
                   ),
                   Text(
-                    '\$${widget.product.price}',
+                    formatRupiah(widget.product.price),
                     style: priceTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,

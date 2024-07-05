@@ -67,9 +67,9 @@ class CheckoutPage extends StatelessWidget {
             Divider(
               color: subtitleColor,
             ),
-            addresItemTile(
+            addressItemTile(
                 Icons.store, "Alamat Toko", "Jl. Jendral Sudirman, Pekanbaru"),
-            addresItemTile(Icons.location_on, "Alamat Kamu",
+            addressItemTile(Icons.location_on, "Alamat Kamu",
                 "Jl. HR Soebrantas, Pekanbaru"),
           ],
         ),

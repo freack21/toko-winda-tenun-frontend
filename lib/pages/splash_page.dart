@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/cart_provider.dart';
 import 'package:frontend/providers/product_provider.dart';
+import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -25,11 +27,21 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _checkAuth() async {
-    Timer(const Duration(seconds: 1), () async {
+    Timer(const Duration(seconds: 0), () async {
       try {
         ProductProvider productProvider =
             Provider.of<ProductProvider>(context, listen: false);
         await productProvider.getProducts();
+
+        if (!mounted) return;
+        CartProvider cartProvider =
+            Provider.of<CartProvider>(context, listen: false);
+        await cartProvider.loadCartFromPrefs();
+
+        if (!mounted) return;
+        WishlistProvider wishlistProvider =
+            Provider.of<WishlistProvider>(context, listen: false);
+        await wishlistProvider.loadWishlistFromPrefs();
 
         if (!mounted) return;
         AuthProvider authProvider =

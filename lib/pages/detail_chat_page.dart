@@ -151,7 +151,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
                     height: 4,
                   ),
                   Text(
-                    "\$${widget.product.price}",
+                    formatRupiah(widget.product.price),
                     style: priceTextStyle.copyWith(fontWeight: semiBold),
                     overflow: TextOverflow.ellipsis,
                   ),

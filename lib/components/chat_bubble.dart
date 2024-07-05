@@ -145,7 +145,7 @@ class ChatBubble extends StatelessWidget {
                         height: 6,
                       ),
                       Text(
-                        "\$${product.price}",
+                        formatRupiah(product.price),
                         style:
                             (isSender ? secondaryTextStyle : subtitleTextStyle)
                                 .copyWith(fontWeight: semiBold),

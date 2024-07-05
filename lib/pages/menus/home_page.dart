@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    Widget popularProductSection() {
+    Widget newProductSection() {
       return Container(
         margin: const EdgeInsets.only(top: 30),
         child: Column(
@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: defaultMargin),
               child: Text(
-                "Produk Populer",
+                "Produk Terbaru",
                 style: primaryTextStyle.copyWith(
                     fontSize: 22, fontWeight: semiBold),
               ),
@@ -205,7 +205,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           header(),
           categoryChooser(),
-          popularProductSection(),
+          newProductSection(),
           allProductSection()
         ],
       ),

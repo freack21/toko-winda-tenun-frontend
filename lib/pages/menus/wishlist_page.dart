@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
+import 'package:frontend/models/product_model.dart';
+import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:provider/provider.dart';
 
 class WishlistPage extends StatelessWidget {
   const WishlistPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
+
     PreferredSizeWidget header() {
       return AppBar(
         centerTitle: true,
@@ -86,18 +91,25 @@ class WishlistPage extends StatelessWidget {
     }
 
     Widget listFavorite() {
-      return ListView(
-        children: [
-          SizedBox(
-            height: defaultMargin,
-          ),
-          favTile(),
-          favTile(),
-          SizedBox(
-            height: defaultMargin,
-          ),
-        ],
-      );
+      return wishlistProvider.wishlist.isEmpty
+          ? noFavorite()
+          : ListView(
+              children: [
+                SizedBox(
+                  height: defaultMargin,
+                ),
+                Column(
+                  children: wishlistProvider.wishlist
+                      .map((ProductModel product) => favTile(
+                            product: product,
+                          ))
+                      .toList(),
+                ),
+                SizedBox(
+                  height: defaultMargin,
+                ),
+              ],
+            );
     }
 
     return Scaffold(

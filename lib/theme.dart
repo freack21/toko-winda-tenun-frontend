@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 double defaultMargin = 30.0;
 
@@ -65,4 +66,10 @@ String capitalizeFirstLowerRest(String str) {
 String imageUrl(String? url) {
   if (url!.contains("://")) return url;
   return "https://songket.beetcodestudio.com/storage/$url";
+}
+
+String formatRupiah(double amount) {
+  final NumberFormat formatter =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp');
+  return formatter.format(amount);
 }

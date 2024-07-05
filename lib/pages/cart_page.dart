@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
+import 'package:frontend/models/cart_model.dart';
+import 'package:frontend/providers/cart_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:provider/provider.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor2,
@@ -87,16 +92,13 @@ class CartPage extends StatelessWidget {
           SizedBox(
             height: defaultMargin / 1.5,
           ),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
-          cartTile(),
+          Column(
+            children: cartProvider.carts
+                .map((CartModel cart) => cartTile(
+                      cart: cart,
+                    ))
+                .toList(),
+          ),
         ],
       );
     }
@@ -124,7 +126,7 @@ class CartPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "\$1000,90",
+                  formatRupiah(cartProvider.totalPrice()),
                   style: priceTextStyle.copyWith(
                       fontWeight: semiBold, fontSize: 16),
                 )
@@ -177,8 +179,9 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor1,
       appBar: header(),
-      body: listCart(),
-      bottomNavigationBar: footer(),
+      body: cartProvider.carts.isEmpty ? noCart() : listCart(),
+      bottomNavigationBar:
+          cartProvider.carts.isEmpty ? const SizedBox() : footer(),
     );
   }
 }

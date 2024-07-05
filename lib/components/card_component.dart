@@ -2,10 +2,13 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/cart_model.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/pages/detail_chat_page.dart';
 import 'package:frontend/pages/product_detail_page.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -67,7 +70,7 @@ class productCard extends StatelessWidget {
                     height: 6,
                   ),
                   Text(
-                    "\$${product.price}",
+                    formatRupiah(product.price),
                     style: priceTextStyle.copyWith(fontWeight: medium),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -111,8 +114,8 @@ class productTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               child: Image.network(
                 imageUrl(product.galleries?[0]?.url),
-                width: 120,
-                height: 120,
+                width: 100,
+                height: 100,
                 fit: BoxFit.cover,
               ),
             ),
@@ -133,13 +136,13 @@ class productTile extends StatelessWidget {
                   Text(
                     product.name,
                     style: primaryTextStyle.copyWith(
-                        fontWeight: semiBold, fontSize: 20),
+                        fontWeight: semiBold, fontSize: 16),
                   ),
                   const SizedBox(
                     height: 6,
                   ),
                   Text(
-                    "\$${product.price}",
+                    formatRupiah(product.price),
                     style: priceTextStyle.copyWith(fontWeight: medium),
                   ),
                 ],
@@ -266,10 +269,14 @@ class chatTile extends StatelessWidget {
 }
 
 class cartTile extends StatelessWidget {
-  const cartTile({super.key});
+  final CartModel cart;
+
+  const cartTile({super.key, required this.cart});
 
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+
     Widget button(String text, Color color) {
       return Container(
         width: 20,
@@ -298,8 +305,8 @@ class cartTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  "assets/image_shoes.png",
+                child: Image.network(
+                  imageUrl(cart.product?.galleries![0]!.url),
                   width: 64,
                 ),
               ),
@@ -312,7 +319,7 @@ class cartTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Lorem ipsum dolor sit amet",
+                      cart.product!.name,
                       style: primaryTextStyle.copyWith(
                           fontWeight: medium, fontSize: 15),
                       overflow: TextOverflow.ellipsis,
@@ -321,7 +328,7 @@ class cartTile extends StatelessWidget {
                       height: 6,
                     ),
                     Text(
-                      "\$120,90",
+                      formatRupiah(cart.product!.price),
                       style: priceTextStyle,
                       overflow: TextOverflow.ellipsis,
                     )
@@ -333,18 +340,28 @@ class cartTile extends StatelessWidget {
               ),
               Column(
                 children: [
-                  button("+", primaryColor),
+                  GestureDetector(
+                    onTap: () {
+                      cartProvider.addQuantity(cart.id);
+                    },
+                    child: button("+", primaryColor),
+                  ),
                   const SizedBox(
                     height: 4,
                   ),
                   Text(
-                    "1",
+                    '${cart.quantity}',
                     style: primaryTextStyle.copyWith(fontWeight: semiBold),
                   ),
                   const SizedBox(
                     height: 4,
                   ),
-                  button("-", subtitleColor),
+                  GestureDetector(
+                    onTap: () {
+                      cartProvider.reduceQuantity(cart.id);
+                    },
+                    child: button("-", subtitleColor),
+                  ),
                 ],
               )
             ],
@@ -353,7 +370,9 @@ class cartTile extends StatelessWidget {
             height: 10,
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              cartProvider.removeCart(cart.id);
+            },
             child: Row(children: [
               Image.asset(
                 "assets/icon_remove.png",
@@ -441,7 +460,7 @@ class itemTile extends StatelessWidget {
   }
 }
 
-Widget addresItemTile(IconData icon, String? title, String? data) {
+Widget addressItemTile(IconData icon, String? title, String? data) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 10),
     child: Row(
@@ -482,68 +501,89 @@ Widget addresItemTile(IconData icon, String? title, String? data) {
 }
 
 class favTile extends StatelessWidget {
-  const favTile({super.key});
+  final ProductModel product;
+
+  const favTile({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(
-          bottom: defaultMargin / 2, left: defaultMargin, right: defaultMargin),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          shape: BoxShape.rectangle,
-          color: secondaryColor),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset("assets/image_shoes.png", width: 64),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Lorem ipsum dolor sit amet",
-                      style: primaryTextStyle.copyWith(
-                          fontWeight: medium, fontSize: 15),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      "\$69,11",
-                      style: priceTextStyle.copyWith(fontWeight: semiBold),
-                    )
-                  ],
+    WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProductDetailPage(product: product)));
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+            bottom: defaultMargin / 2,
+            left: defaultMargin,
+            right: defaultMargin),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            shape: BoxShape.rectangle,
+            color: secondaryColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      imageUrl(product.galleries![0]!.url),
+                      width: 64,
+                    )),
+                const SizedBox(
+                  width: 12,
                 ),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              Container(
-                width: 32,
-                height: 32,
-                decoration:
-                    BoxDecoration(shape: BoxShape.circle, color: primaryColor),
-                child: Icon(
-                  Icons.favorite_rounded,
-                  color: whiteColor,
-                  size: 18,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        product.name,
+                        style: primaryTextStyle.copyWith(
+                            fontWeight: medium, fontSize: 15),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        formatRupiah(product.price),
+                        style: priceTextStyle.copyWith(fontWeight: semiBold),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(
+                  width: 12,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    wishlistProvider.setProduct(product);
+                  },
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: primaryColor),
+                    child: Icon(
+                      Icons.favorite_rounded,
+                      color: whiteColor,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
