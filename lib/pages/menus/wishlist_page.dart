@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/product_model.dart';
+import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ class WishlistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
+    PageProvider pageProvider = Provider.of<PageProvider>(context);
 
     PreferredSizeWidget header() {
       return AppBar(
@@ -72,7 +74,7 @@ class WishlistPage extends StatelessWidget {
               ),
               TextButton(
                   onPressed: () {
-                    Navigator.popAndPushNamed(context, "/home");
+                    pageProvider.currentIndex = 0;
                   },
                   style: TextButton.styleFrom(
                       backgroundColor: primaryColor,

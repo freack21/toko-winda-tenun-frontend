@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/cart_model.dart';
 import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
+    PageProvider pageProvider = Provider.of<PageProvider>(context);
 
     PreferredSizeWidget header() {
       return AppBar(
@@ -71,7 +73,10 @@ class CartPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         color: primaryColor),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        pageProvider.currentIndex = 0;
+                        Navigator.popAndPushNamed(context, "/home");
+                      },
                       child: Text(
                         "Jelajahi Toko",
                         style: whiteTextStyle.copyWith(fontSize: 16),

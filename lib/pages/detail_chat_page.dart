@@ -56,6 +56,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
         );
       } catch (e) {
         print('Pesan Gagal Dikirim!');
+        print(e);
       }
 
       setState(() {

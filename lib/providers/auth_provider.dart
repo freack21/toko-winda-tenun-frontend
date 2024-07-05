@@ -66,8 +66,6 @@ class AuthProvider with ChangeNotifier {
     String password = "",
   }) async {
     try {
-      print("Coba Login");
-
       UserModel user = await AuthService().login(
         email: email,
         password: password,

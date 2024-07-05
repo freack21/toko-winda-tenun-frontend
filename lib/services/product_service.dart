@@ -16,8 +16,6 @@ class ProductService {
 
     var response = await http.get(Uri.parse(url), headers: headers);
 
-    print(response.body);
-
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data']['data'];
       List<ProductModel> products = [];

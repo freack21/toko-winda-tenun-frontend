@@ -14,7 +14,7 @@ class TransactionService {
     };
     var body = jsonEncode(
       {
-        'address': 'Marsemoon',
+        'address': 'Pekanbaru',
         'items': carts
             .map(
               (cart) => {

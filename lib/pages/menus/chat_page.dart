@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,7 @@ class ChatPage extends StatelessWidget {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     UserModel user = authProvider.user;
+    PageProvider pageProvider = Provider.of<PageProvider>(context);
 
     Widget header() {
       return AppBar(
@@ -76,7 +78,9 @@ class ChatPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                                 color: primaryColor),
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                pageProvider.currentIndex = 0;
+                              },
                               child: Text(
                                 "Jelajahi Toko",
                                 style: whiteTextStyle.copyWith(fontSize: 16),

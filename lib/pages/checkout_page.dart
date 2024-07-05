@@ -1,12 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
+import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/transaction_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:provider/provider.dart';
 
-class CheckoutPage extends StatelessWidget {
+class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
 
   @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends State<CheckoutPage> {
+  bool isLoading = false;
+
+  @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    TransactionProvider transactionProvider =
+        Provider.of<TransactionProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    handleCheckout() async {
+      setState(() {
+        isLoading = true;
+      });
+
+      if (await transactionProvider.checkout(
+        authProvider.user.token,
+        cartProvider.carts,
+        cartProvider.totalPrice(),
+      )) {
+        cartProvider.carts = [];
+        if (!context.mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/checkout-result', (route) => false);
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor2,
