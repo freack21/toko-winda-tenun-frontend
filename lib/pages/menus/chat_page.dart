@@ -108,9 +108,12 @@ class ChatPage extends StatelessWidget {
                     .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Expanded(
+                return Expanded(
                   child: Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(
+                      subtitleColor,
+                    )),
                   ),
                 );
               }

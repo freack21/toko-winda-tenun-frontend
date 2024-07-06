@@ -208,7 +208,9 @@ class ChatBubble extends StatelessWidget {
     return VisibilityDetector(
       key: Key(chatDocument.id),
       onVisibilityChanged: (visibilityInfo) {
-        if (visibilityInfo.visibleFraction > 0.5 && !chatDocument['has_read']) {
+        if (!isSender &&
+            visibilityInfo.visibleFraction > 0.5 &&
+            !chatDocument['has_read']) {
           _updateHasRead();
         }
       },

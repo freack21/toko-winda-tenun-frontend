@@ -278,7 +278,11 @@ class _DetailChatPageState extends State<DetailChatPage> {
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(
+                subtitleColor,
+              )));
             }
 
             var chatDocuments = snapshot.data!.docs;

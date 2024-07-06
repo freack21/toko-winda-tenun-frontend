@@ -109,7 +109,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation(
-                        primaryColor,
+                        subtitleColor,
                       ),
                     ),
                   )

@@ -395,7 +395,9 @@ class cartTile extends StatelessWidget {
 }
 
 class itemTile extends StatelessWidget {
-  const itemTile({super.key});
+  final CartModel cart;
+
+  const itemTile({super.key, required this.cart});
 
   @override
   Widget build(BuildContext context) {
@@ -411,8 +413,8 @@ class itemTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  "assets/image_shoes.png",
+                child: Image.network(
+                  imageUrl(cart.product?.galleries![0]!.url),
                   width: 64,
                 ),
               ),
@@ -425,7 +427,7 @@ class itemTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Lorem ipsum dolor sit amet",
+                      cart.product!.name,
                       style: primaryTextStyle.copyWith(
                           fontWeight: medium, fontSize: 15),
                       overflow: TextOverflow.ellipsis,
@@ -434,7 +436,7 @@ class itemTile extends StatelessWidget {
                       height: 6,
                     ),
                     Text(
-                      "\$120,90",
+                      formatRupiah(cart.product!.price),
                       style: priceTextStyle,
                       overflow: TextOverflow.ellipsis,
                     )
@@ -447,7 +449,7 @@ class itemTile extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    "1 item",
+                    "${cart.quantity} item",
                     style: subtitleTextStyle.copyWith(fontSize: 13),
                   ),
                 ],

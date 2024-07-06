@@ -14,11 +14,12 @@ class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key, required this.product});
 
   @override
-  _ProductDetailPageState createState() => _ProductDetailPageState();
+  State<ProductDetailPage> createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int currentIndex = 0;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     height: 44,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
+                        Navigator.popAndPushNamed(context, '/cart');
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: primaryColor,
@@ -460,8 +461,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       height: 48,
                       child: TextButton(
                         onPressed: () {
+                          setState(() {
+                            isLoading = true;
+                          });
+
                           cartProvider.addCart(widget.product);
                           showSuccessDialog();
+
+                          setState(() {
+                            isLoading = false;
+                          });
                         },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -469,13 +478,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                           backgroundColor: primaryColor,
                         ),
-                        child: Text(
-                          'Tambah ke Keranjang',
-                          style: whiteTextStyle.copyWith(
-                            fontSize: 16,
-                            fontWeight: semiBold,
-                          ),
-                        ),
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation(
+                                whiteColor,
+                              ))
+                            : Text(
+                                'Tambah ke Keranjang',
+                                style: whiteTextStyle.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: semiBold,
+                                ),
+                              ),
                       ),
                     ),
                   ),

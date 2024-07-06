@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/form_component.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,8 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    PageProvider pageProvider = Provider.of<PageProvider>(context);
+    pageProvider.currentIndex = 0;
 
     handleSignIn() async {
       setState(() {

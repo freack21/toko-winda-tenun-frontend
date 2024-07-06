@@ -3,9 +3,35 @@ import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  bool isLoading = false;
+
+  void _sendEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'fixri2104@gmail.com',
+      queryParameters: {
+        'subject': 'Bantuan Pemakaian Aplikasi Toko Winda Tenun',
+        'body':
+            'Halo, aku memiliki pertanyaan seputar aplikasi Toko Winda Tenun. Pertanyaanku adalah : '
+      },
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      print('Could not launch $emailUri');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +43,7 @@ class ProfilePage extends StatelessWidget {
         centerTitle: false,
         toolbarHeight: 100,
         backgroundColor: backgroundColor2,
+        automaticallyImplyLeading: false,
         title: Container(
           padding: EdgeInsets.only(
               left: defaultMargin / 1.5,
@@ -53,20 +80,33 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(
                 width: 12,
               ),
-              GestureDetector(
-                onTap: () async {
-                  if (await authProvider.logout(token: user.token)) {
-                    if (!context.mounted) return;
-                    Navigator.popUntil(context, ModalRoute.withName("/"));
-                    Navigator.pushNamed(context, "/sign-in");
-                  }
-                },
-                child: const Icon(
-                  Icons.logout_rounded,
-                  color: Colors.red,
-                  size: 24,
-                ),
-              )
+              isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(
+                      subtitleColor,
+                    ))
+                  : GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+
+                        if (await authProvider.logout(token: user.token)) {
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          if (!context.mounted) return;
+                          Navigator.popUntil(context, ModalRoute.withName("/"));
+                          Navigator.pushNamed(context, "/sign-in");
+                        }
+                      },
+                      child: const Icon(
+                        Icons.logout_rounded,
+                        color: Colors.red,
+                        size: 24,
+                      ),
+                    )
             ],
           ),
         ),
@@ -119,8 +159,11 @@ class ProfilePage extends StatelessWidget {
               },
               child: itemMenu("Edit Profil"),
             ),
-            itemMenu("Daftar Pesanan"),
-            itemMenu("Bantuan"),
+            GestureDetector(
+              onTap: () {},
+              child: itemMenu("Daftar Pesanan"),
+            ),
+            GestureDetector(onTap: _sendEmail, child: itemMenu("Bantuan")),
             SizedBox(
               height: defaultMargin,
             ),

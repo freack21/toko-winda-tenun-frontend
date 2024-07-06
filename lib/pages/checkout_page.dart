@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
+import 'package:frontend/components/form_component.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/providers/cart_provider.dart';
 import 'package:frontend/providers/transaction_provider.dart';
@@ -28,15 +29,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
         isLoading = true;
       });
 
-      if (await transactionProvider.checkout(
+      bool statusCO = await transactionProvider.checkout(
         authProvider.user.token,
         cartProvider.carts,
         cartProvider.totalPrice(),
-      )) {
+      );
+      if (!context.mounted) return;
+      Navigator.popAndPushNamed(context, '/checkout-result',
+          arguments: {'isSuccess': statusCO});
+
+      if (statusCO) {
         cartProvider.carts = [];
-        if (!context.mounted) return;
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/checkout-result', (route) => false);
       }
 
       setState(() {
@@ -77,8 +80,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
             Divider(
               color: subtitleColor,
             ),
-            itemTile(),
-            itemTile(),
+            Column(
+              children: cartProvider.carts
+                  .map(
+                    (cart) => itemTile(cart: cart),
+                  )
+                  .toList(),
+            ),
           ],
         ),
       );
@@ -144,7 +152,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   style: secondaryTextStyle,
                 )),
                 Text(
-                  "2 item",
+                  "${cartProvider.totalItems()} item",
                   style: primaryTextStyle.copyWith(
                       fontSize: 15, fontWeight: semiBold),
                 ),
@@ -161,7 +169,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   style: secondaryTextStyle,
                 )),
                 Text(
-                  "\$574,12",
+                  formatRupiah(cartProvider.totalPrice()),
                   style: primaryTextStyle.copyWith(
                       fontSize: 15, fontWeight: semiBold),
                 ),
@@ -201,7 +209,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   style: primaryTextStyle.copyWith(fontWeight: semiBold),
                 )),
                 Text(
-                  "\$574,12",
+                  formatRupiah(cartProvider.totalPrice()),
                   style: primaryTextStyle.copyWith(
                       fontSize: 15, fontWeight: semiBold),
                 ),
@@ -225,26 +233,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 vertical: defaultMargin / 1.25, horizontal: defaultMargin),
             child: SizedBox(
               width: double.infinity,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.popAndPushNamed(context, "/checkout-result");
-                },
-                style: TextButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              child: isLoading
+                  ? const LoadingButton()
+                  : TextButton(
+                      onPressed: handleCheckout,
+                      style: TextButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20)),
+                      child: Center(
+                        child: Text(
+                          "Checkout Sekarang",
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: medium,
+                          ),
+                        ),
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20)),
-                child: Center(
-                  child: Text(
-                    "Checkout Sekarang",
-                    style: whiteTextStyle.copyWith(
-                      fontSize: 16,
-                      fontWeight: medium,
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
         ],
