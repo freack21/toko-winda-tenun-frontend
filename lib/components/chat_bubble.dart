@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/modal_component.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/pages/product_detail_page.dart';
@@ -29,86 +30,6 @@ class ChatBubble extends StatelessWidget {
         (chatDocument['product'] as Map<String, dynamic>).containsKey('id')
             ? ProductModel.fromJson(chatDocument['product'])
             : UninitializedProductModel();
-
-    Future<void> showSuccessDialog() async {
-      return showDialog(
-        context: context,
-        builder: (BuildContext context) => SizedBox(
-          width: MediaQuery.of(context).size.width - (2 * defaultMargin),
-          child: AlertDialog(
-            backgroundColor: backgroundColor3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        Icons.close,
-                        color: primaryTextColor,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    Icons.check_circle_outline_rounded,
-                    size: 100,
-                    color: primaryColor,
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'Horee :)',
-                    style: primaryTextStyle.copyWith(
-                      fontSize: 18,
-                      fontWeight: semiBold,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'Produk berhasil ditambahkan!',
-                    style: secondaryTextStyle,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    width: 154,
-                    height: 44,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        'Lihat Keranjang',
-                        style: whiteTextStyle.copyWith(
-                          fontSize: 16,
-                          fontWeight: medium,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
 
     Widget productPreview() {
       return Container(
@@ -163,10 +84,25 @@ class ChatBubble extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ProductDetailPage(product: product)));
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) =>
+                          ProductDetailPage(product: product),
+                      transitionDuration: const Duration(seconds: 1),
+                      transitionsBuilder: (_, animation, __, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                            position: offsetAnimation, child: child);
+                      },
+                    ),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                     side:
@@ -187,7 +123,10 @@ class ChatBubble extends StatelessWidget {
               child: TextButton(
                 onPressed: () {
                   cartProvider.addCart(product);
-                  showSuccessDialog();
+                  showDialog(
+                    context: context,
+                    builder: (_) => const SuccessAddToCartModal(),
+                  );
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(

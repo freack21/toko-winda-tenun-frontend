@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -120,7 +121,17 @@ class _MainPageState extends State<MainPage> {
         floatingActionButton: cartButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: customBottomNav(),
-        body: body(),
+        body: PageTransitionSwitcher(
+          duration: const Duration(milliseconds: 500),
+          transitionBuilder: (child, animation, secondaryAnimation) {
+            return FadeThroughTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              child: child,
+            );
+          },
+          child: body(),
+        ),
       ),
     );
   }

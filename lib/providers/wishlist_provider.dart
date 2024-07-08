@@ -5,12 +5,20 @@ import 'dart:convert';
 
 class WishlistProvider with ChangeNotifier {
   List<ProductModel> _wishlist = [];
+  int _userId = -1;
 
   List<ProductModel> get wishlist => _wishlist;
+  int get userId => _userId;
 
   Future<List<ProductModel>> get wishlistAwait async {
     await loadWishlistFromPrefs();
     return _wishlist;
+  }
+
+  set userId(int userID) {
+    _userId = userID;
+    loadWishlistFromPrefs(); // Load wishlist for the new user ID
+    notifyListeners();
   }
 
   set wishlist(List<ProductModel> wishlist) {
@@ -29,7 +37,7 @@ class WishlistProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  isWishlist(ProductModel product) {
+  bool isWishlist(ProductModel product) {
     return _wishlist.indexWhere((element) => element.id == product.id) != -1;
   }
 
@@ -37,17 +45,19 @@ class WishlistProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final List<String> wishlistList =
         _wishlist.map((product) => jsonEncode(product.toJson())).toList();
-    prefs.setStringList('wishlist', wishlistList);
+    await prefs.setStringList('wishlist_$_userId', wishlistList);
   }
 
   Future<void> loadWishlistFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String>? wishlistList = prefs.getStringList('wishlist');
+    final List<String>? wishlistList = prefs.getStringList('wishlist_$_userId');
     if (wishlistList != null) {
       _wishlist = wishlistList
           .map((product) => ProductModel.fromJson(jsonDecode(product)))
           .toList();
-      notifyListeners();
+    } else {
+      _wishlist = [];
     }
+    notifyListeners();
   }
 }

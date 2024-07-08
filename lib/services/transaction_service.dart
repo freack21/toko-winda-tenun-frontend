@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:frontend/models/cart_model.dart';
+import 'package:frontend/models/order_model.dart';
+import 'package:frontend/theme.dart';
 import 'package:http/http.dart' as http;
-import '../models/cart_model.dart';
 
 class TransactionService {
-  String baseUrl = 'https://songket.beetcodestudio.com/api';
-
   Future<bool> checkout(
       String token, List<CartModel> carts, double totalPrice) async {
     var url = '$baseUrl/checkout';
@@ -41,6 +41,33 @@ class TransactionService {
       return true;
     } else {
       throw Exception('Gagal Melakukan Checkout!');
+    }
+  }
+
+  Future<List<OrderModel>> getTransactions(String token) async {
+    var url = '$baseUrl/transactions';
+    var headers = {
+      'Authorization': token,
+    };
+
+    var response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body)['data'];
+      List<OrderModel> orders = [];
+
+      for (var item in data) {
+        orders.add(OrderModel.fromJson(item));
+      }
+
+      return orders;
+    } else {
+      throw Exception('Gagal Mengambil Data Transaksi!');
     }
   }
 }

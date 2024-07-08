@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:frontend/models/user_model.dart';
+import 'package:frontend/theme.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  String baseUrl = 'https://songket.beetcodestudio.com/api';
-
   Future<UserModel> register({
     String name = "",
     String username = "",

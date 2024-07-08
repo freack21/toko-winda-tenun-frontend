@@ -1,10 +1,9 @@
 import 'dart:convert';
+import 'package:frontend/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/models/product_model.dart';
 
 class ProductService {
-  String baseUrl = 'https://songket.beetcodestudio.com/api';
-
   Future<List<ProductModel>> getProducts({String category = ""}) async {
     var url = '$baseUrl/products?key=fkrvndii';
 
@@ -17,7 +16,7 @@ class ProductService {
     var response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
-      List data = jsonDecode(response.body)['data']['data'];
+      List data = jsonDecode(response.body)['data'];
       List<ProductModel> products = [];
 
       for (var item in data) {

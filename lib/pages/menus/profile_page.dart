@@ -15,15 +15,22 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool isLoading = false;
 
+  String _encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
+
   void _sendEmail() async {
     final Uri emailUri = Uri(
       scheme: 'mailto',
       path: 'fixri2104@gmail.com',
-      queryParameters: {
+      query: _encodeQueryParameters(<String, String>{
         'subject': 'Bantuan Pemakaian Aplikasi Toko Winda Tenun',
         'body':
             'Halo, aku memiliki pertanyaan seputar aplikasi Toko Winda Tenun. Pertanyaanku adalah : '
-      },
+      }),
     );
 
     if (await canLaunchUrl(emailUri)) {

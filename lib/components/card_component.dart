@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/cart_model.dart';
+import 'package:frontend/models/order_model.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/pages/detail_chat_page.dart';
 import 'package:frontend/pages/product_detail_page.dart';
@@ -22,9 +23,23 @@ class productCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product)));
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => ProductDetailPage(product: product),
+            transitionDuration: const Duration(seconds: 1),
+            transitionsBuilder: (_, animation, __, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+          ),
+        );
       },
       child: Container(
         width: 215,
@@ -94,9 +109,23 @@ class productTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product)));
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => ProductDetailPage(product: product),
+            transitionDuration: const Duration(seconds: 1),
+            transitionsBuilder: (_, animation, __, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(
@@ -394,6 +423,81 @@ class cartTile extends StatelessWidget {
   }
 }
 
+class orderTile extends StatelessWidget {
+  final OrderModel order;
+
+  const orderTile({super.key, required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    Widget orderItem(CartModel cart) {
+      return Container(
+        margin: EdgeInsets.only(
+            bottom: defaultMargin / 2,
+            left: defaultMargin,
+            right: defaultMargin),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12), color: secondaryColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    imageUrl(cart.product?.galleries![0]!.url),
+                    width: 64,
+                  ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        cart.product!.name,
+                        style: primaryTextStyle.copyWith(
+                            fontWeight: medium, fontSize: 15),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(
+                        height: 6,
+                      ),
+                      Text(
+                        formatRupiah(cart.product!.price),
+                        style: priceTextStyle,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: EdgeInsets.only(
+          bottom: defaultMargin / 2, left: defaultMargin, right: defaultMargin),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12), color: secondaryColor),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: order.items!.map((item) => orderItem(item)).toList(),
+      ),
+    );
+  }
+}
+
 class itemTile extends StatelessWidget {
   final CartModel cart;
 
@@ -514,9 +618,23 @@ class favTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product)));
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => ProductDetailPage(product: product),
+            transitionDuration: const Duration(seconds: 1),
+            transitionsBuilder: (_, animation, __, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(
@@ -554,7 +672,7 @@ class favTile extends StatelessWidget {
                             fontWeight: medium, fontSize: 15),
                       ),
                       const SizedBox(
-                        height: 4,
+                        height: 6,
                       ),
                       Text(
                         formatRupiah(product.price),

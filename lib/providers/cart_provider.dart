@@ -6,12 +6,20 @@ import 'dart:convert';
 
 class CartProvider with ChangeNotifier {
   List<CartModel> _carts = [];
+  int _userId = -1;
 
   List<CartModel> get carts => _carts;
+  int get userId => _userId;
 
   Future<List<CartModel>> get cartsAwait async {
     await loadCartFromPrefs();
     return _carts;
+  }
+
+  set userId(int userID) {
+    _userId = userID;
+    loadCartFromPrefs(); // Load cart for the new user ID
+    notifyListeners();
   }
 
   set carts(List<CartModel> carts) {
@@ -76,28 +84,26 @@ class CartProvider with ChangeNotifier {
   }
 
   productExist(ProductModel product) {
-    if (_carts.indexWhere((element) => element.product?.id == product.id) ==
-        -1) {
-      return false;
-    } else {
-      return true;
-    }
+    return _carts.indexWhere((element) => element.product?.id == product.id) !=
+        -1;
   }
 
   Future<void> saveCartToPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> cartList =
         _carts.map((cart) => jsonEncode(cart.toJson())).toList();
-    prefs.setStringList('cart', cartList);
+    await prefs.setStringList('cart_$_userId', cartList);
   }
 
   Future<void> loadCartFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String>? cartList = prefs.getStringList('cart');
+    final List<String>? cartList = prefs.getStringList('cart_$_userId');
     if (cartList != null) {
       _carts =
           cartList.map((cart) => CartModel.fromJson(jsonDecode(cart))).toList();
-      notifyListeners();
+    } else {
+      _carts = [];
     }
+    notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/modal_component.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/pages/detail_chat_page.dart';
 import 'package:frontend/providers/auth_provider.dart';
@@ -27,86 +28,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
-    Future<void> showSuccessDialog() async {
-      return showDialog(
-        context: context,
-        builder: (BuildContext context) => SizedBox(
-          width: MediaQuery.of(context).size.width - (2 * defaultMargin),
-          child: AlertDialog(
-            backgroundColor: backgroundColor3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        Icons.close,
-                        color: primaryTextColor,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    Icons.check_circle_outline_rounded,
-                    size: 100,
-                    color: primaryColor,
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'Horee :)',
-                    style: primaryTextStyle.copyWith(
-                      fontSize: 18,
-                      fontWeight: semiBold,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    'Produk berhasil ditambahkan!',
-                    style: secondaryTextStyle,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    width: 154,
-                    height: 44,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.popAndPushNamed(context, '/cart');
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        'Lihat Keranjang',
-                        style: whiteTextStyle.copyWith(
-                          fontSize: 16,
-                          fontWeight: medium,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     Widget indicator(int index) {
       return Container(
         width: currentIndex == index ? 16 : 4,
@@ -125,9 +46,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       return GestureDetector(
         onTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ProductDetailPage(product: product_)));
+            context,
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => ProductDetailPage(product: product_),
+              transitionDuration: const Duration(seconds: 1),
+              transitionsBuilder: (_, animation, __, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(position: offsetAnimation, child: child);
+              },
+            ),
+          );
         },
         child: Container(
           width: 54,
@@ -168,9 +103,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     color: blackColor,
                   ),
                 ),
-                Icon(
-                  Icons.shopping_bag,
-                  color: primaryColor,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/cart');
+                  },
+                  child: Icon(
+                    Icons.shopping_bag,
+                    color: primaryColor,
+                  ),
                 ),
               ],
             ),
@@ -466,7 +406,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           });
 
                           cartProvider.addCart(widget.product);
-                          showSuccessDialog();
+                          showDialog(
+                            context: context,
+                            builder: (_) => const SuccessAddToCartModal(),
+                          );
 
                           setState(() {
                             isLoading = false;

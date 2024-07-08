@@ -58,6 +58,8 @@ TextStyle alertTextStyle = GoogleFonts.poppins(
   color: alertColor,
 );
 
+String baseUrl = 'https://songket.beetcodestudio.com/api';
+
 String capitalizeFirstLowerRest(String str) {
   if (str.isEmpty) return str;
   return str[0] + str.substring(1).toLowerCase();

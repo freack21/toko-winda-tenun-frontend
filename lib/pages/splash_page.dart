@@ -34,21 +34,21 @@ class _SplashPageState extends State<SplashPage> {
         await productProvider.getProducts();
 
         if (!mounted) return;
-        CartProvider cartProvider =
-            Provider.of<CartProvider>(context, listen: false);
-        await cartProvider.loadCartFromPrefs();
-
-        if (!mounted) return;
-        WishlistProvider wishlistProvider =
-            Provider.of<WishlistProvider>(context, listen: false);
-        await wishlistProvider.loadWishlistFromPrefs();
-
-        if (!mounted) return;
         AuthProvider authProvider =
             Provider.of<AuthProvider>(context, listen: false);
         UserModel user = await authProvider.userAwait;
 
         if (await authProvider.check(token: user.token)) {
+          if (!mounted) return;
+          CartProvider cartProvider =
+              Provider.of<CartProvider>(context, listen: false);
+          cartProvider.userId = authProvider.user.id;
+
+          if (!mounted) return;
+          WishlistProvider wishlistProvider =
+              Provider.of<WishlistProvider>(context, listen: false);
+          wishlistProvider.userId = authProvider.user.id;
+
           if (!mounted) return;
           Navigator.popAndPushNamed(context, '/home');
           return;

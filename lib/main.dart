@@ -34,6 +34,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> routes = {
+      '/': const SplashPage(),
+      '/sign-in': const SignInPage(),
+      '/sign-up': const SignUpPage(),
+      '/sign-up2': const SignUp2Page(),
+      '/home': const MainPage(),
+      '/cart': const CartPage(),
+      '/checkout': const CheckoutPage(),
+      '/checkout-result': const ResultCheckoutPage(),
+      '/edit-profile': const EditProfilePage(),
+    };
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -57,16 +69,23 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        routes: {
-          '/': (context) => const SplashPage(),
-          '/sign-in': (context) => const SignInPage(),
-          '/sign-up': (context) => const SignUpPage(),
-          '/sign-up2': (context) => const SignUp2Page(),
-          '/home': (context) => const MainPage(),
-          '/cart': (context) => const CartPage(),
-          '/checkout': (context) => const CheckoutPage(),
-          '/checkout-result': (context) => const ResultCheckoutPage(),
-          '/edit-profile': (context) => const EditProfilePage(),
+        onGenerateRoute: (settings) {
+          return PageRouteBuilder(
+            settings: settings,
+            pageBuilder: (_, __, ___) => routes[settings.name],
+            transitionsBuilder: (_, animation, __, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 750),
+          );
         },
       ),
     );

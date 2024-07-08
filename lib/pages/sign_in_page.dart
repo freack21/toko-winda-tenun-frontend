@@ -23,8 +23,6 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    PageProvider pageProvider = Provider.of<PageProvider>(context);
-    pageProvider.currentIndex = 0;
 
     handleSignIn() async {
       setState(() {
@@ -36,6 +34,8 @@ class _SignInPageState extends State<SignInPage> {
         password: passwordController.text,
       )) {
         if (!context.mounted) return;
+        PageProvider pageProvider = Provider.of<PageProvider>(context, listen: false);
+        pageProvider.currentIndex = 0;
         Navigator.popUntil(context, ModalRoute.withName('/'));
         Navigator.pushNamed(context, '/home');
       } else {
