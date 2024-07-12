@@ -38,10 +38,12 @@ class OrderPage extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  shape: BoxShape.rectangle,
-                  color: secondaryColor),
+                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.rectangle,
+                color: secondaryColor,
+              ),
               child: Column(
                 children: [
                   Icon(
@@ -56,6 +58,7 @@ class OrderPage extends StatelessWidget {
                     "Ups! Kamu belum punya pesanan nih..",
                     style: primaryTextStyle.copyWith(
                         fontSize: 16, fontWeight: medium),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 12,
@@ -63,6 +66,7 @@ class OrderPage extends StatelessWidget {
                   Text(
                     "Ayo temukan songket favorit kamu!",
                     style: secondaryTextStyle,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 24,

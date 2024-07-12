@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/form_component.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/order_provider.dart';
 import 'package:frontend/providers/page_provider.dart';
+import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -33,8 +36,25 @@ class _SignInPageState extends State<SignInPage> {
         email: emailController.text,
         password: passwordController.text,
       )) {
+        if (!mounted) return;
+        CartProvider cartProvider =
+            Provider.of<CartProvider>(context, listen: false);
+        cartProvider.userId = authProvider.user.id;
+
+        if (!mounted) return;
+        WishlistProvider wishlistProvider =
+            Provider.of<WishlistProvider>(context, listen: false);
+        wishlistProvider.userId = authProvider.user.id;
+
+        if (!mounted) return;
+        OrderProvider orderProvider =
+            Provider.of<OrderProvider>(context, listen: false);
+        orderProvider.userId = authProvider.user.id;
+        await orderProvider.getOrders(authProvider.user.token);
+
         if (!context.mounted) return;
-        PageProvider pageProvider = Provider.of<PageProvider>(context, listen: false);
+        PageProvider pageProvider =
+            Provider.of<PageProvider>(context, listen: false);
         pageProvider.currentIndex = 0;
         Navigator.popUntil(context, ModalRoute.withName('/'));
         Navigator.pushNamed(context, '/home');

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/chat_bubble.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/models/user_model.dart';
@@ -84,7 +85,9 @@ class _DetailChatPageState extends State<DetailChatPage> {
                 shape: BoxShape.circle,
               ),
               child: widget.user_avatar != null
-                  ? Image.network(imageUrl(widget.user_avatar))
+                  ? cachedNetworkImage(
+                      imageUrl(widget.user_avatar),
+                    )
                   : Image.asset("assets/image_shop_logo.png"),
             ),
             const SizedBox(
@@ -130,7 +133,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
+              child: cachedNetworkImage(
                 imageUrl(widget.product.galleries![0]!.url),
                 width: 54,
               ),

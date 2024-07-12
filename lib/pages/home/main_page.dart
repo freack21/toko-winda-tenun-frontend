@@ -75,7 +75,7 @@ class _MainPageState extends State<MainPage> {
         child: BottomAppBar(
           padding: EdgeInsets.zero,
           shape: const CircularNotchedRectangle(),
-          notchMargin: 10,
+          notchMargin: 12,
           clipBehavior: Clip.antiAlias,
           color: transparentColor,
           child: Container(
@@ -121,6 +121,7 @@ class _MainPageState extends State<MainPage> {
         floatingActionButton: cartButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: customBottomNav(),
+        extendBody: true,
         body: PageTransitionSwitcher(
           duration: const Duration(milliseconds: 500),
           transitionBuilder: (child, animation, secondaryAnimation) {

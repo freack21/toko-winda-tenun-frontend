@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/order_model.dart';
+import 'package:frontend/services/transaction_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -45,5 +46,19 @@ class OrderProvider with ChangeNotifier {
       _orders = [];
     }
     notifyListeners();
+  }
+
+  Future<bool> getOrders(String token) async {
+    try {
+      List<OrderModel> orders =
+          await TransactionService().getTransactions(token);
+
+      _orders = orders;
+      return true;
+    } catch (e) {
+      print('order');
+      print(e);
+    }
+    return false;
   }
 }

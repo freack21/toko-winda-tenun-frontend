@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/theme.dart';
@@ -48,19 +49,20 @@ class _ProfilePageState extends State<ProfilePage> {
     Widget header() {
       return AppBar(
         centerTitle: false,
-        toolbarHeight: 100,
-        backgroundColor: backgroundColor2,
+        toolbarHeight: 120,
+        backgroundColor: transparentColor,
         automaticallyImplyLeading: false,
         title: Container(
           padding: EdgeInsets.only(
-              left: defaultMargin / 1.5,
-              right: defaultMargin / 1.5,
-              top: defaultMargin / 1.5,
-              bottom: defaultMargin / 1.5),
+            left: defaultMargin / 2,
+            right: defaultMargin / 2,
+            top: defaultMargin / 1.5,
+            bottom: defaultMargin / 2,
+          ),
           child: Row(
             children: [
               ClipOval(
-                child: Image.network(
+                child: cachedNetworkImage(
                   user.avatar,
                   width: 54,
                 ),
@@ -74,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       "Halo, ${user.name.split(" ")[0]}!",
-                      style: primaryTextStyle.copyWith(
+                      style: whiteTextStyle.copyWith(
                           fontWeight: semiBold, fontSize: 20),
                     ),
                     Text(
@@ -90,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
               isLoading
                   ? CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation(
-                      subtitleColor,
+                      whiteColor,
                     ))
                   : GestureDetector(
                       onTap: () async {
@@ -142,58 +144,65 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       }
 
-      return Container(
-        width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: defaultMargin),
-        padding: EdgeInsets.all(defaultMargin / 2),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Akun",
-              style:
-                  primaryTextStyle.copyWith(fontWeight: semiBold, fontSize: 18),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, "/edit-profile");
-              },
-              child: itemMenu("Edit Profil"),
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: itemMenu("Daftar Pesanan"),
-            ),
-            GestureDetector(onTap: _sendEmail, child: itemMenu("Bantuan")),
-            SizedBox(
-              height: defaultMargin,
-            ),
-            Text(
-              "Lainnya",
-              style:
-                  primaryTextStyle.copyWith(fontWeight: semiBold, fontSize: 18),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            itemMenu("Ketentuan & Kebijakan"),
-            itemMenu("Beri Nilai Aplikasi"),
-          ],
+      return Expanded(
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(defaultMargin),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32),
+            color: backgroundColor2,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Akun",
+                style: primaryTextStyle.copyWith(
+                    fontWeight: semiBold, fontSize: 18),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/edit-profile");
+                },
+                child: itemMenu("Edit Profil"),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/order");
+                },
+                child: itemMenu("Daftar Pesanan"),
+              ),
+              GestureDetector(onTap: _sendEmail, child: itemMenu("Bantuan")),
+              SizedBox(
+                height: defaultMargin,
+              ),
+              Text(
+                "Lainnya",
+                style: primaryTextStyle.copyWith(
+                    fontWeight: semiBold, fontSize: 18),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              itemMenu("Ketentuan & Kebijakan"),
+              itemMenu("Beri Nilai Aplikasi"),
+            ],
+          ),
         ),
       );
     }
 
-    return Column(
-      children: [
-        header(),
-        profileMenu(),
-      ],
+    return Container(
+      color: priceColor,
+      child: Column(
+        children: [
+          header(),
+          profileMenu(),
+        ],
+      ),
     );
   }
 }

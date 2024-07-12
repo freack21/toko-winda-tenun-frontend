@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/form_component.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
@@ -132,7 +133,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: EdgeInsets.all(defaultMargin),
         child: Center(
           child: ClipOval(
-            child: Image.network(
+            child: cachedNetworkImage(
               user.avatar,
               width: 120,
             ),

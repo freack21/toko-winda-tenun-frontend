@@ -1,10 +1,13 @@
 // ignore_for_file: camel_case_types
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/modal_component.dart';
 import 'package:frontend/models/cart_model.dart';
 import 'package:frontend/models/order_model.dart';
 import 'package:frontend/models/product_model.dart';
+import 'package:frontend/models/variation_model.dart';
 import 'package:frontend/pages/detail_chat_page.dart';
 import 'package:frontend/pages/product_detail_page.dart';
 import 'package:frontend/providers/auth_provider.dart';
@@ -53,7 +56,7 @@ class productCard extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            Image.network(
+            cachedNetworkImage(
               imageUrl(product.galleries?[0]?.url),
               width: 215,
               height: 130,
@@ -141,7 +144,7 @@ class productTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
+              child: cachedNetworkImage(
                 imageUrl(product.galleries?[0]?.url),
                 width: 100,
                 height: 100,
@@ -164,7 +167,7 @@ class productTile extends StatelessWidget {
                   ),
                   Text(
                     product.name,
-                    style: primaryTextStyle.copyWith(
+                    style: blackTextStyle.copyWith(
                         fontWeight: semiBold, fontSize: 16),
                   ),
                   const SizedBox(
@@ -250,7 +253,11 @@ class chatTile extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: authProvider.user.role.contains("ADMIN")
-                      ? Image.network(imageUrl(chatDocument['user_avatar']))
+                      ? cachedNetworkImage(
+                          imageUrl(
+                            chatDocument['user_avatar'],
+                          ),
+                        )
                       : Image.asset("assets/image_shop_logo.png"),
                 ),
                 const SizedBox(
@@ -334,7 +341,7 @@ class cartTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
+                child: cachedNetworkImage(
                   imageUrl(cart.product?.galleries![0]!.url),
                   width: 64,
                 ),
@@ -428,71 +435,192 @@ class orderTile extends StatelessWidget {
 
   const orderTile({super.key, required this.order});
 
+  int totalProduct() {
+    int retVal = 0;
+    order.items?.forEach((item) {
+      retVal += item.quantity;
+    });
+
+    return retVal;
+  }
+
+  double totalPrice() {
+    double retVal = 0;
+    order.items?.forEach((item) {
+      retVal += item.getTotalPrice();
+    });
+
+    return retVal;
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget orderItem(CartModel cart) {
-      return Container(
-        margin: EdgeInsets.only(
-            bottom: defaultMargin / 2,
-            left: defaultMargin,
-            right: defaultMargin),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12), color: secondaryColor),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    imageUrl(cart.product?.galleries![0]!.url),
-                    width: 64,
-                  ),
-                ),
-                const SizedBox(
-                  width: 12,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        cart.product!.name,
-                        style: primaryTextStyle.copyWith(
-                            fontWeight: medium, fontSize: 15),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        formatRupiah(cart.product!.price),
-                        style: priceTextStyle,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
-                  ),
-                ),
-              ],
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) =>
+                  ProductDetailPage(product: cart.product!),
+              transitionDuration: const Duration(seconds: 1),
+              transitionsBuilder: (_, animation, __, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(position: offsetAnimation, child: child);
+              },
             ),
-          ],
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: secondaryColor,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: cachedNetworkImage(
+                      imageUrl(cart.product?.galleries![0]!.url),
+                      width: 64,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          cart.product!.name,
+                          style: primaryTextStyle.copyWith(
+                              fontWeight: medium, fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          formatRupiah(cart.product!.price),
+                          style: priceTextStyle,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 6,
+                  ),
+                  Text(
+                    'x ${cart.quantity}',
+                    style: primaryTextStyle.copyWith(
+                      fontWeight: semiBold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     }
 
     return Container(
       margin: EdgeInsets.only(
-          bottom: defaultMargin / 2, left: defaultMargin, right: defaultMargin),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        bottom: defaultMargin / 2,
+        left: defaultMargin / 2,
+        right: defaultMargin / 2,
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12), color: secondaryColor),
+        borderRadius: BorderRadius.circular(12),
+        color: secondaryColor,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: order.items!.map((item) => orderItem(item)).toList(),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.address!,
+                    style: blackTextStyle.copyWith(
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    DateFormat("EEEE, d MMMM yyyy", "id_ID")
+                        .format(order.createdAt!),
+                    style: blackTextStyle.copyWith(
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    )),
+                child: Text(
+                  order.status!,
+                  style: whiteTextStyle,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 6,
+          ),
+          const Divider(),
+          Column(
+            children: order.items!.map((item) => orderItem(item)).toList(),
+          ),
+          const Divider(),
+          const SizedBox(
+            height: 6,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${totalProduct()} produk',
+                style: primaryTextStyle.copyWith(
+                  fontWeight: semiBold,
+                  fontSize: 13,
+                ),
+              ),
+              Text(
+                'Total Harga : ${formatRupiah(totalPrice())}',
+                style: primaryTextStyle.copyWith(
+                  fontWeight: semiBold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(),
+        ],
       ),
     );
   }
@@ -517,7 +645,7 @@ class itemTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
+                child: cachedNetworkImage(
                   imageUrl(cart.product?.galleries![0]!.url),
                   width: 64,
                 ),
@@ -654,7 +782,7 @@ class favTile extends StatelessWidget {
               children: [
                 ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
+                    child: cachedNetworkImage(
                       imageUrl(product.galleries![0]!.url),
                       width: 64,
                     )),
@@ -707,4 +835,225 @@ class favTile extends StatelessWidget {
       ),
     );
   }
+}
+
+class variationSelection extends StatefulWidget {
+  final Map<String, List<VariationModel>>? variations;
+  final ProductModel product;
+
+  const variationSelection(
+      {super.key, required this.variations, required this.product});
+
+  @override
+  State<variationSelection> createState() => _variationSelectionState();
+}
+
+class _variationSelectionState extends State<variationSelection> {
+  Map<String, int> currentIndexs = {};
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (var key in widget.variations!.keys) {
+      currentIndexs[key] = -1;
+    }
+  }
+
+  bool isFullfilled() {
+    for (var key in currentIndexs.keys) {
+      if (currentIndexs[key] == -1) return false;
+    }
+
+    return true;
+  }
+
+  List<int> variationIds() {
+    List<int> ids = [];
+    for (var key in currentIndexs.keys) {
+      ids.add(currentIndexs[key]!);
+    }
+
+    return ids;
+  }
+
+  String variationIdsString() {
+    return "[${variationIds().join(",")}]";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+
+    String variationString() {
+      List<String> retVal = [];
+      for (var key in currentIndexs.keys) {
+        String value = "";
+        for (var data in widget.variations![key]!) {
+          if (data.id == currentIndexs[key]) value = data.value;
+        }
+        retVal.add(value);
+      }
+      return retVal.join(", ");
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: widget.variations!.keys.map((key) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    key,
+                    style: blackTextStyle.copyWith(
+                      fontSize: 15,
+                      fontWeight: semiBold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Wrap(
+                    spacing: 12,
+                    children:
+                        widget.variations![key]!.asMap().entries.map((entry) {
+                      VariationModel variant = entry.value;
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            currentIndexs[key] = variant.id;
+                          });
+                          print(variationString());
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
+                          ),
+                          decoration: BoxDecoration(
+                            color: currentIndexs[key] == variant.id
+                                ? primaryColor
+                                : const Color(0xffeeeeee),
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                          child: Text(
+                            variant.value,
+                            style: currentIndexs[key] == variant.id
+                                ? whiteTextStyle
+                                : blackTextStyle,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              );
+            }).toList()),
+        const SizedBox(
+          height: 15,
+        ),
+        Divider(
+          color: subtitleColor,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: TextButton(
+            onPressed: () async {
+              if (!isFullfilled()) return;
+
+              setState(() {
+                isLoading = true;
+              });
+
+              Navigator.pop(context);
+              cartProvider.addCart(widget.product, variationIds(), "");
+              showDialog(
+                context: context,
+                builder: (_) => const SuccessAddToCartModal(),
+              );
+
+              setState(() {
+                isLoading = false;
+              });
+            },
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              backgroundColor:
+                  isFullfilled() ? primaryColor : const Color(0xff999999),
+            ),
+            child: isLoading
+                ? SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(
+                          whiteColor,
+                        )),
+                  )
+                : Text(
+                    'Tambah ke Keranjang',
+                    style: whiteTextStyle.copyWith(
+                      fontSize: 15,
+                      fontWeight: semiBold,
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+Widget brokenImage(
+    BuildContext context, Object exception, StackTrace? stackTrace) {
+  return const Center(
+    child: Icon(
+      Icons.broken_image_rounded,
+      color: Color(0xff555555),
+    ),
+  );
+}
+
+Widget brokenImageNetwork() {
+  return const Center(
+    child: Icon(
+      Icons.broken_image_rounded,
+      color: Color(0xff555555),
+    ),
+  );
+}
+
+Widget cachedNetworkImage(String imageUrl,
+    {double? width, double? height, BoxFit? fit}) {
+  return CachedNetworkImage(
+    progressIndicatorBuilder: (context, url, progress) => Center(
+      child: CircularProgressIndicator(
+        value: progress.progress,
+      ),
+    ),
+    imageUrl: imageUrl,
+    width: width,
+    height: height,
+    fit: fit,
+    errorWidget: (_, __, ___) => brokenImageNetwork(),
+  );
+}
+
+ImageProvider cachedNetworkImageProvider(String imageUrl) {
+  return CachedNetworkImageProvider(imageUrl);
 }

@@ -28,8 +28,8 @@ class OrderModel {
 
     items = [];
     if (json.containsKey('items')) {
-      for (var item in (json['items'] as List<Map<String, dynamic>>)) {
-        items?.add(CartModel.fromJson(item));
+      for (var item in (json['items'] as List<dynamic>)) {
+        if (item != null) items?.add(CartModel.fromJson((item)));
       }
     }
 

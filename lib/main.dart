@@ -4,6 +4,7 @@ import 'package:frontend/pages/cart_page.dart';
 import 'package:frontend/pages/checkout_page.dart';
 import 'package:frontend/pages/edit_profile_page.dart';
 import 'package:frontend/pages/home/main_page.dart';
+import 'package:frontend/pages/order_page.dart';
 import 'package:frontend/pages/result_checkout_page.dart';
 import 'package:frontend/pages/sign_in_page.dart';
 import 'package:frontend/pages/sign_up2_page.dart';
@@ -11,10 +12,12 @@ import 'package:frontend/pages/sign_up_page.dart';
 import 'package:frontend/pages/splash_page.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/order_provider.dart';
 import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/providers/product_provider.dart';
 import 'package:frontend/providers/transaction_provider.dart';
 import 'package:frontend/providers/wishlist_provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -26,7 +29,8 @@ void main() async {
     messagingSenderId: '223721923641',
     projectId: 'tokowindatenun',
   ));
-  runApp(const MyApp());
+  await initializeDateFormatting('id_ID', null)
+      .then((_) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -41,6 +45,7 @@ class MyApp extends StatelessWidget {
       '/sign-up2': const SignUp2Page(),
       '/home': const MainPage(),
       '/cart': const CartPage(),
+      '/order': const OrderPage(),
       '/checkout': const CheckoutPage(),
       '/checkout-result': const ResultCheckoutPage(),
       '/edit-profile': const EditProfilePage(),
@@ -59,6 +64,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => CartProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OrderProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => TransactionProvider(),

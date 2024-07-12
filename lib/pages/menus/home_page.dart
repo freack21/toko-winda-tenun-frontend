@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/providers/order_provider.dart';
 import 'package:frontend/providers/product_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentCategoryIndex = 0;
 
+  Future<void> _pullRefresh() async {
+    try {
+      ProductProvider productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
+      await productProvider.getProducts();
+
+      if (!mounted) return;
+      AuthProvider authProvider =
+          Provider.of<AuthProvider>(context, listen: false);
+      UserModel user = authProvider.user;
+
+      if (!mounted) return;
+      OrderProvider orderProvider =
+          Provider.of<OrderProvider>(context, listen: false);
+      orderProvider.userId = authProvider.user.id;
+      await orderProvider.getOrders(user.token);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
@@ -28,7 +50,10 @@ class _HomePageState extends State<HomePage> {
     Widget header() {
       return Container(
         margin: EdgeInsets.only(
-            top: defaultMargin, left: defaultMargin, right: defaultMargin),
+          top: defaultMargin,
+          left: defaultMargin,
+          right: defaultMargin,
+        ),
         child: Row(
           children: [
             Expanded(
@@ -53,7 +78,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                    image: NetworkImage(
+                    image: cachedNetworkImageProvider(
                       user.avatar,
                     ),
                   )),
@@ -201,13 +226,12 @@ class _HomePageState extends State<HomePage> {
     }
 
     return SafeArea(
-      child: ListView(
-        children: [
-          header(),
-          categoryChooser(),
-          newProductSection(),
-          allProductSection()
-        ],
+      child: RefreshIndicator(
+        onRefresh: _pullRefresh,
+        color: primaryColor,
+        child: ListView(
+          children: [header(), newProductSection(), allProductSection()],
+        ),
       ),
     );
   }

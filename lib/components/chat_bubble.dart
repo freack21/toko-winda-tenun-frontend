@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/modal_component.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/models/user_model.dart';
@@ -46,7 +47,7 @@ class ChatBubble extends StatelessWidget {
               children: [
                 ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
+                    child: cachedNetworkImage(
                       imageUrl(product.galleries?[0]?.url),
                       width: 70,
                     )),
@@ -122,7 +123,7 @@ class ChatBubble extends StatelessWidget {
               width: double.infinity,
               child: TextButton(
                 onPressed: () {
-                  cartProvider.addCart(product);
+                  cartProvider.addCart(product, [], "");
                   showDialog(
                     context: context,
                     builder: (_) => const SuccessAddToCartModal(),

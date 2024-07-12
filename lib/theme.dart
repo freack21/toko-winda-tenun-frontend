@@ -58,7 +58,7 @@ TextStyle alertTextStyle = GoogleFonts.poppins(
   color: alertColor,
 );
 
-String baseUrl = 'https://songket.beetcodestudio.com/api';
+String baseUrl = 'https://tenunsongketwindah.com/api';
 
 String capitalizeFirstLowerRest(String str) {
   if (str.isEmpty) return str;
@@ -67,11 +67,27 @@ String capitalizeFirstLowerRest(String str) {
 
 String imageUrl(String? url) {
   if (url!.contains("://")) return url;
-  return "https://songket.beetcodestudio.com/storage/$url";
+  return "https://tenunsongketwindah.com/storage/$url";
 }
 
 String formatRupiah(double amount) {
   final NumberFormat formatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp');
   return formatter.format(amount);
+}
+
+bool areListsEqual(List? list1, List? list2) {
+  if (list1 == null && list2 == null) return true;
+  if (list1 == null && list2 != null) return false;
+  if (list1 != null && list2 == null) return false;
+
+  if (list1!.length != list2!.length) {
+    return false;
+  }
+  for (int i = 0; i < list1.length; i++) {
+    if (list1[i] != list2[i]) {
+      return false;
+    }
+  }
+  return true;
 }

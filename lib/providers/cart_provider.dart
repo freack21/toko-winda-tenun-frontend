@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/cart_model.dart';
 import 'package:frontend/models/product_model.dart';
+import 'package:frontend/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -28,8 +29,9 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  addCart(ProductModel product) {
-    if (productExist(product)) {
+  addCart(ProductModel product, List<dynamic>? variationValueIds,
+      String? variationString) {
+    if (productExist(product, variationValueIds, variationString)) {
       int index =
           _carts.indexWhere((element) => element.product?.id == product.id);
       _carts[index].quantity++;
@@ -39,6 +41,8 @@ class CartProvider with ChangeNotifier {
           id: _carts.length,
           product: product,
           quantity: 1,
+          variationValueIds: variationValueIds,
+          variationString: variationString,
         ),
       );
     }
@@ -83,8 +87,12 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
-  productExist(ProductModel product) {
-    return _carts.indexWhere((element) => element.product?.id == product.id) !=
+  productExist(ProductModel product, List<dynamic>? variationValueIds,
+      String? variationString) {
+    return _carts.indexWhere((element) =>
+            element.product?.id == product.id &&
+            areListsEqual(element.variationValueIds, variationValueIds) &&
+            element.variationString == variationString) !=
         -1;
   }
 

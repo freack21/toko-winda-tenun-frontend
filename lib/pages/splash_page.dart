@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/providers/cart_provider.dart';
+import 'package:frontend/providers/order_provider.dart';
 import 'package:frontend/providers/product_provider.dart';
 import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
@@ -48,6 +49,12 @@ class _SplashPageState extends State<SplashPage> {
           WishlistProvider wishlistProvider =
               Provider.of<WishlistProvider>(context, listen: false);
           wishlistProvider.userId = authProvider.user.id;
+
+          if (!mounted) return;
+          OrderProvider orderProvider =
+              Provider.of<OrderProvider>(context, listen: false);
+          orderProvider.userId = authProvider.user.id;
+          await orderProvider.getOrders(user.token);
 
           if (!mounted) return;
           Navigator.popAndPushNamed(context, '/home');

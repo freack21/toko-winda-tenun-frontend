@@ -35,7 +35,7 @@ class TransactionService {
       body: body,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
       return true;
@@ -55,14 +55,18 @@ class TransactionService {
       headers: headers,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
-      List data = jsonDecode(response.body)['data'];
       List<OrderModel> orders = [];
 
-      for (var item in data) {
-        orders.add(OrderModel.fromJson(item));
+      if (jsonDecode(response.body)['data'] is List<dynamic>) {
+        List data = jsonDecode(response.body)['data'];
+        for (var item in data) {
+          orders.add(OrderModel.fromJson(item));
+        }
+      } else {
+        orders.add(OrderModel.fromJson(jsonDecode(response.body)['data']));
       }
 
       return orders;

@@ -33,7 +33,7 @@ class WishlistPage extends StatelessWidget {
     Widget noFavorite() {
       return Center(
         child: Container(
-          margin: EdgeInsets.all(defaultMargin / 1.5),
+          margin: EdgeInsets.all(defaultMargin),
           padding: EdgeInsets.all(defaultMargin / 1.5),
           decoration: BoxDecoration(
               color: whiteColor, borderRadius: BorderRadius.circular(12)),

@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/modal_component.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/pages/detail_chat_page.dart';
@@ -18,9 +19,26 @@ class ProductDetailPage extends StatefulWidget {
   State<ProductDetailPage> createState() => _ProductDetailPageState();
 }
 
-class _ProductDetailPageState extends State<ProductDetailPage> {
+class _ProductDetailPageState extends State<ProductDetailPage>
+    with SingleTickerProviderStateMixin {
   int currentIndex = 0;
   bool isLoading = false;
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +89,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             right: 16,
           ),
           decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(imageUrl(product_.galleries?[0]?.url)),
-            ),
             borderRadius: BorderRadius.circular(6),
+          ),
+          child: cachedNetworkImage(
+            imageUrl(product_.galleries?[0]?.url),
           ),
         ),
       );
@@ -121,7 +139,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           CarouselSlider(
             items: widget.product.galleries!
                 .map(
-                  (image) => Image.network(
+                  (image) => cachedNetworkImage(
                     imageUrl(image!.url),
                     width: MediaQuery.of(context).size.width,
                     height: 310,
@@ -404,12 +422,71 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           setState(() {
                             isLoading = true;
                           });
-
-                          cartProvider.addCart(widget.product);
-                          showDialog(
-                            context: context,
-                            builder: (_) => const SuccessAddToCartModal(),
-                          );
+                          if (widget.product.variations == null ||
+                              widget.product.variations!.keys.isEmpty) {
+                            cartProvider.addCart(widget.product, [], "");
+                            showDialog(
+                              context: context,
+                              builder: (_) => const SuccessAddToCartModal(),
+                            );
+                          } else {
+                            showModalBottomSheet<void>(
+                              context: context,
+                              transitionAnimationController: _controller,
+                              builder: (BuildContext context) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0.0, 1.0),
+                                    end: Offset.zero,
+                                  ).animate(CurvedAnimation(
+                                    parent: _controller,
+                                    curve: Curves.easeInOut,
+                                  )),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 20,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: backgroundColor2,
+                                      borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(32),
+                                        topLeft: Radius.circular(32),
+                                      ),
+                                    ),
+                                    width: double.infinity,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 50,
+                                          height: 5,
+                                          decoration: BoxDecoration(
+                                            color: subtitleColor,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: variationSelection(
+                                            variations:
+                                                widget.product.variations,
+                                            product: widget.product,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
 
                           setState(() {
                             isLoading = false;
