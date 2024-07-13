@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/order_model.dart';
+import 'package:frontend/models/user_model.dart';
+import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/providers/order_provider.dart';
 import 'package:frontend/providers/page_provider.dart';
+import 'package:frontend/providers/product_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +16,23 @@ class OrderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     OrderProvider orderProvider = Provider.of<OrderProvider>(context);
     PageProvider pageProvider = Provider.of<PageProvider>(context);
+
+    Future<void> pullRefresh() async {
+      try {
+        ProductProvider productProvider =
+            Provider.of<ProductProvider>(context, listen: false);
+        await productProvider.getProducts();
+
+        if (!context.mounted) return;
+        AuthProvider authProvider =
+            Provider.of<AuthProvider>(context, listen: false);
+        UserModel user = authProvider.user;
+
+        await orderProvider.getOrders(user.token);
+      } catch (e) {
+        print(e);
+      }
+    }
 
     PreferredSizeWidget header() {
       return AppBar(
@@ -115,7 +135,11 @@ class OrderPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor1,
       appBar: header(),
-      body: orderProvider.orders.isEmpty ? noOrder() : listOrder(),
+      body: RefreshIndicator(
+        onRefresh: pullRefresh,
+        color: primaryColor,
+        child: orderProvider.orders.isEmpty ? noOrder() : listOrder(),
+      ),
     );
   }
 }

@@ -14,8 +14,34 @@ class CheckoutPage extends StatefulWidget {
   State<CheckoutPage> createState() => _CheckoutPageState();
 }
 
-class _CheckoutPageState extends State<CheckoutPage> {
+class _CheckoutPageState extends State<CheckoutPage>
+    with SingleTickerProviderStateMixin {
   bool isLoading = false;
+  String userAddress = "Pekanbaru";
+  TextEditingController addressController = TextEditingController(text: "");
+
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +49,60 @@ class _CheckoutPageState extends State<CheckoutPage> {
     TransactionProvider transactionProvider =
         Provider.of<TransactionProvider>(context);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    void showAddressModal() {
+      addressController.text = userAddress;
+      _animationController.forward();
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ScaleTransition(
+            scale: _animation,
+            child: AlertDialog(
+              backgroundColor: whiteColor,
+              title: Text(
+                "Ubah Alamat",
+                style: primaryTextStyle.copyWith(fontWeight: semiBold),
+              ),
+              content: TextField(
+                controller: addressController,
+                style: blackTextStyle,
+                decoration: InputDecoration(
+                  hintText: "Masukkan alamat baru",
+                  hintStyle: subtitleTextStyle,
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    "Batal",
+                    style: blackTextStyle.copyWith(color: alertColor),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text(
+                    "Simpan",
+                    style: primaryTextStyle,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      userAddress = addressController.text;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ).then((_) {
+        _animationController.reset();
+      });
+    }
 
     handleCheckout() async {
       setState(() {
@@ -33,6 +113,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         authProvider.user.token,
         cartProvider.carts,
         cartProvider.totalPrice(),
+        userAddress,
       );
       if (!context.mounted) return;
       Navigator.popAndPushNamed(context, '/checkout-result',
@@ -106,16 +187,38 @@ class _CheckoutPageState extends State<CheckoutPage> {
           children: [
             Text(
               "Detail Alamat",
-              style:
-                  primaryTextStyle.copyWith(fontSize: 18, fontWeight: semiBold),
+              style: primaryTextStyle.copyWith(
+                fontSize: 18,
+                fontWeight: semiBold,
+              ),
             ),
             Divider(
               color: subtitleColor,
             ),
             addressItemTile(
-                Icons.store, "Alamat Toko", "Jl. Jendral Sudirman, Pekanbaru"),
-            addressItemTile(Icons.location_on, "Alamat Kamu",
-                "Jl. HR Soebrantas, Pekanbaru"),
+              Icons.store,
+              "Alamat Toko",
+              "Jl. Jendral Sudirman, Pekanbaru",
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: addressItemTile(
+                    Icons.location_on,
+                    "Alamat Kamu",
+                    userAddress,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: showAddressModal,
+                  child: Icon(
+                    Icons.edit_location_alt_rounded,
+                    color: primaryColor,
+                    size: 24,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       );
@@ -154,7 +257,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Text(
                   "${cartProvider.totalItems()} item",
                   style: primaryTextStyle.copyWith(
-                      fontSize: 15, fontWeight: semiBold),
+                    fontSize: 15,
+                    fontWeight: semiBold,
+                  ),
                 ),
               ],
             ),
@@ -171,7 +276,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Text(
                   formatRupiah(cartProvider.totalPrice()),
                   style: primaryTextStyle.copyWith(
-                      fontSize: 15, fontWeight: semiBold),
+                    fontSize: 15,
+                    fontWeight: semiBold,
+                  ),
                 ),
               ],
             ),
@@ -188,7 +295,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Text(
                   "Gratis",
                   style: primaryTextStyle.copyWith(
-                      fontSize: 15, fontWeight: semiBold),
+                    fontSize: 15,
+                    fontWeight: semiBold,
+                  ),
                 ),
               ],
             ),
@@ -211,7 +320,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Text(
                   formatRupiah(cartProvider.totalPrice()),
                   style: primaryTextStyle.copyWith(
-                      fontSize: 15, fontWeight: semiBold),
+                    fontSize: 15,
+                    fontWeight: semiBold,
+                  ),
                 ),
               ],
             ),

@@ -30,11 +30,28 @@ class DetailChatPage extends StatefulWidget {
 class _DetailChatPageState extends State<DetailChatPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   TextEditingController messageController = TextEditingController(text: '');
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     UserModel user = authProvider.user;
+
+    void scrollToBottom() {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    }
 
     handleAddMessage() async {
       if (messageController.text.isEmpty) return;
@@ -64,6 +81,8 @@ class _DetailChatPageState extends State<DetailChatPage> {
         widget.product = UninitializedProductModel();
         messageController.text = '';
       });
+
+      scrollToBottom();
     }
 
     PreferredSizeWidget header() {
@@ -295,7 +314,12 @@ class _DetailChatPageState extends State<DetailChatPage> {
                   .compareTo(DateTime.parse(b['created_at']));
             });
 
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              scrollToBottom();
+            });
+
             return ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
               itemCount: chatDocuments.length,
               itemBuilder: (context, index) {

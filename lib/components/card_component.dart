@@ -356,16 +356,33 @@ class cartTile extends StatelessWidget {
                   children: [
                     Text(
                       cart.product!.name,
-                      style: primaryTextStyle.copyWith(
-                          fontWeight: medium, fontSize: 15),
+                      style: blackTextStyle.copyWith(
+                        fontWeight: medium,
+                        fontSize: 15,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
+                    cart.variationString != null &&
+                            cart.variationString!.isNotEmpty
+                        ? Column(
+                            children: [
+                              const SizedBox(
+                                height: 2,
+                              ),
+                              Text(
+                                '[${cart.variationString!}]',
+                                style: subtitleTextStyle.copyWith(fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
                     const SizedBox(
-                      height: 6,
+                      height: 8,
                     ),
                     Text(
                       formatRupiah(cart.product!.price),
-                      style: priceTextStyle,
+                      style: priceTextStyle.copyWith(fontWeight: semiBold),
                       overflow: TextOverflow.ellipsis,
                     )
                   ],
@@ -507,16 +524,34 @@ class orderTile extends StatelessWidget {
                       children: [
                         Text(
                           cart.product!.name,
-                          style: primaryTextStyle.copyWith(
-                              fontWeight: medium, fontSize: 15),
+                          style: blackTextStyle.copyWith(
+                            fontWeight: medium,
+                            fontSize: 15,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
+                        cart.variationString != null &&
+                                cart.variationString!.isNotEmpty
+                            ? Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 2,
+                                  ),
+                                  Text(
+                                    '[${cart.variationString!}]',
+                                    style: subtitleTextStyle.copyWith(
+                                        fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              )
+                            : const SizedBox(),
                         const SizedBox(
-                          height: 6,
+                          height: 8,
                         ),
                         Text(
                           formatRupiah(cart.product!.price),
-                          style: priceTextStyle,
+                          style: priceTextStyle.copyWith(fontWeight: semiBold),
                           overflow: TextOverflow.ellipsis,
                         )
                       ],
@@ -660,16 +695,33 @@ class itemTile extends StatelessWidget {
                   children: [
                     Text(
                       cart.product!.name,
-                      style: primaryTextStyle.copyWith(
-                          fontWeight: medium, fontSize: 15),
+                      style: blackTextStyle.copyWith(
+                        fontWeight: medium,
+                        fontSize: 15,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
+                    cart.variationString != null &&
+                            cart.variationString!.isNotEmpty
+                        ? Column(
+                            children: [
+                              const SizedBox(
+                                height: 2,
+                              ),
+                              Text(
+                                '[${cart.variationString!}]',
+                                style: subtitleTextStyle.copyWith(fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
                     const SizedBox(
-                      height: 6,
+                      height: 8,
                     ),
                     Text(
                       formatRupiah(cart.product!.price),
-                      style: priceTextStyle,
+                      style: priceTextStyle.copyWith(fontWeight: semiBold),
                       overflow: TextOverflow.ellipsis,
                     )
                   ],
@@ -932,6 +984,7 @@ class _variationSelectionState extends State<variationSelection> {
                             currentIndexs[key] = variant.id;
                           });
                           print(variationString());
+                          print(variationIds());
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -978,7 +1031,8 @@ class _variationSelectionState extends State<variationSelection> {
               });
 
               Navigator.pop(context);
-              cartProvider.addCart(widget.product, variationIds(), "");
+              cartProvider.addCart(
+                  widget.product, variationIds(), variationString());
               showDialog(
                 context: context,
                 builder: (_) => const SuccessAddToCartModal(),
@@ -1044,6 +1098,9 @@ Widget cachedNetworkImage(String imageUrl,
     progressIndicatorBuilder: (context, url, progress) => Center(
       child: CircularProgressIndicator(
         value: progress.progress,
+        valueColor: AlwaysStoppedAnimation(
+          subtitleColor,
+        ),
       ),
     ),
     imageUrl: imageUrl,

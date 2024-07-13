@@ -5,8 +5,8 @@ import 'package:frontend/theme.dart';
 import 'package:http/http.dart' as http;
 
 class TransactionService {
-  Future<bool> checkout(
-      String token, List<CartModel> carts, double totalPrice) async {
+  Future<bool> checkout(String token, List<CartModel> carts, double totalPrice,
+      String userAddress) async {
     var url = '$baseUrl/checkout';
     var headers = {
       'Content-Type': 'application/json',
@@ -14,12 +14,13 @@ class TransactionService {
     };
     var body = jsonEncode(
       {
-        'address': 'Pekanbaru',
+        'address': userAddress,
         'items': carts
             .map(
               (cart) => {
                 'id': cart.product?.id,
                 'quantity': cart.quantity,
+                'variation_value_ids': cart.variationValueIds,
               },
             )
             .toList(),
@@ -35,7 +36,7 @@ class TransactionService {
       body: body,
     );
 
-    // print(response.body);
+    print(response.body);
 
     if (response.statusCode == 200) {
       return true;
@@ -55,7 +56,7 @@ class TransactionService {
       headers: headers,
     );
 
-    // print(response.body);
+    print(response.body);
 
     if (response.statusCode == 200) {
       List<OrderModel> orders = [];

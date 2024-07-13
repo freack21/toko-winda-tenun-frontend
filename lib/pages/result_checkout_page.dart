@@ -98,6 +98,8 @@ class ResultCheckoutPage extends StatelessWidget {
                     onPressed: () {
                       if (!isSuccess) {
                         Navigator.popAndPushNamed(context, '/cart');
+                      } else {
+                        Navigator.pushNamed(context, "/order");
                       }
                     },
                     style: TextButton.styleFrom(

@@ -22,7 +22,7 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  set orders(List<OrderModel> orders) {
+  setOrders(List<OrderModel> orders) {
     _orders = orders;
     saveOrderToPrefs();
     notifyListeners();
@@ -53,7 +53,7 @@ class OrderProvider with ChangeNotifier {
       List<OrderModel> orders =
           await TransactionService().getTransactions(token);
 
-      _orders = orders;
+      setOrders(orders);
       return true;
     } catch (e) {
       print('order');

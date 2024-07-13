@@ -32,8 +32,10 @@ class CartProvider with ChangeNotifier {
   addCart(ProductModel product, List<dynamic>? variationValueIds,
       String? variationString) {
     if (productExist(product, variationValueIds, variationString)) {
-      int index =
-          _carts.indexWhere((element) => element.product?.id == product.id);
+      int index = _carts.indexWhere((element) =>
+          element.product?.id == product.id &&
+          areListsEqual(element.variationValueIds, variationValueIds) &&
+          element.variationString == variationString);
       _carts[index].quantity++;
     } else {
       _carts.add(
