@@ -15,6 +15,8 @@ class ProductService {
 
     var response = await http.get(Uri.parse(url), headers: headers);
 
+    // print(response.body);
+
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data'];
       List<ProductModel> products = [];
@@ -26,6 +28,23 @@ class ProductService {
       return products;
     } else {
       throw Exception('Gagal Get Products!');
+    }
+  }
+
+  Future<ProductModel> getProduct(int id) async {
+    var url = '$baseUrl/products?id=$id';
+
+    var headers = {'Content-Type': 'application/json'};
+
+    var response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+      ProductModel product = ProductModel.fromJson(data);
+
+      return product;
+    } else {
+      throw Exception('Gagal Get Product!');
     }
   }
 }

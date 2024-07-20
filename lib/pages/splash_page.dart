@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
@@ -61,7 +62,9 @@ class _SplashPageState extends State<SplashPage> {
           return;
         }
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       }
 
       if (!mounted) return;
@@ -75,9 +78,9 @@ class _SplashPageState extends State<SplashPage> {
         backgroundColor: backgroundColor1,
         body: Center(
             child: Image.asset(
-          "assets/image_splash.png",
+          "assets/logo_twt.png",
           color: primaryColor,
-          width: 150,
+          width: 200,
         )));
   }
 }

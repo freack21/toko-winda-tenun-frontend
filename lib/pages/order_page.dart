@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/order_model.dart';
@@ -30,7 +31,9 @@ class OrderPage extends StatelessWidget {
 
         await orderProvider.getOrders(user.token);
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       }
     }
 

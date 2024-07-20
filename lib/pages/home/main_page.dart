@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:frontend/pages/menus/chat_page.dart';
 import 'package:frontend/pages/menus/home_page.dart';
 import 'package:frontend/pages/menus/profile_page.dart';
-import 'package:frontend/pages/menus/wishlist_page.dart';
+import 'package:frontend/pages/order_page.dart';
 import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
         case 1:
           return const ChatPage();
         case 2:
-          return const WishlistPage();
+          return const OrderPage();
         case 3:
           return const ProfilePage();
         default:
@@ -53,16 +53,18 @@ class _MainPageState extends State<MainPage> {
       );
     }
 
-    Widget bottomNavItem(String icon, int index, {double width = 20}) {
+    Widget bottomNavItem(String icon, int index,
+        {double width = 20, Icon? icons}) {
       return IconButton(
         iconSize: 32.0,
-        icon: Image.asset(
-          "assets/$icon",
-          width: width,
-          color: pageProvider.currentIndex == index
-              ? primaryColor
-              : Color(0xff808191),
-        ),
+        icon: icons ??
+            Image.asset(
+              "assets/$icon",
+              width: width,
+              color: pageProvider.currentIndex == index
+                  ? primaryColor
+                  : const Color(0xff808191),
+            ),
         onPressed: () {
           pageProvider.currentIndex = index;
         },
@@ -88,7 +90,14 @@ class _MainPageState extends State<MainPage> {
               children: [
                 bottomNavItem("icon_home.png", 0),
                 bottomNavItem("icon_chat.png", 1),
-                bottomNavItem("icon_wishlist.png", 2),
+                bottomNavItem(
+                  "icon_wishlist.png",
+                  2,
+                  icons: const Icon(
+                    Icons.list_rounded,
+                    size: 20,
+                  ),
+                ),
                 bottomNavItem("icon_profile.png", 3),
               ],
             ),

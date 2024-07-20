@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/services/auth_service.dart';
@@ -56,7 +57,9 @@ class AuthProvider with ChangeNotifier {
       setUser(user);
       return true;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
@@ -74,7 +77,9 @@ class AuthProvider with ChangeNotifier {
       setUser(user);
       return true;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
@@ -93,7 +98,9 @@ class AuthProvider with ChangeNotifier {
         return true;
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     return false;
   }
@@ -108,7 +115,9 @@ class AuthProvider with ChangeNotifier {
 
       return isLoggedIn;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     return false;
   }
@@ -128,7 +137,9 @@ class AuthProvider with ChangeNotifier {
       setUser(user);
       return true;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }

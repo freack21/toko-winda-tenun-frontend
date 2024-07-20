@@ -4,6 +4,7 @@ import 'package:frontend/pages/cart_page.dart';
 import 'package:frontend/pages/checkout_page.dart';
 import 'package:frontend/pages/edit_profile_page.dart';
 import 'package:frontend/pages/home/main_page.dart';
+import 'package:frontend/pages/menus/wishlist_page.dart';
 import 'package:frontend/pages/order_page.dart';
 import 'package:frontend/pages/result_checkout_page.dart';
 import 'package:frontend/pages/sign_in_page.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
       '/home': const MainPage(),
       '/cart': const CartPage(),
       '/order': const OrderPage(),
+      '/wishlist': const WishlistPage(),
       '/checkout': const CheckoutPage(),
       '/checkout-result': const ResultCheckoutPage(),
       '/edit-profile': const EditProfilePage(),

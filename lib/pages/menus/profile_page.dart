@@ -36,8 +36,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
-    } else {
-      print('Could not launch $emailUri');
     }
   }
 
@@ -171,9 +169,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, "/order");
+                  Navigator.pushNamed(context, "/wishlist");
                 },
-                child: itemMenu("Daftar Pesanan"),
+                child: itemMenu("Wishlist Saya"),
               ),
               GestureDetector(onTap: _sendEmail, child: itemMenu("Bantuan")),
               SizedBox(

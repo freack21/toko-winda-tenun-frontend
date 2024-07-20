@@ -32,7 +32,9 @@ class ProductModel {
     name = json['name'];
     price = double.parse(json['price'].toString());
     description = json['description'];
-    tags = json['tags'];
+    if (json.containsKey('tags')) {
+      tags = json['tags'] ?? "";
+    }
     category = CategoryModel.fromJson(json['category']);
     galleries = json['galleries']
         .map<GalleryModel>((gallery) => GalleryModel.fromJson(gallery))
@@ -41,7 +43,7 @@ class ProductModel {
     variations = {};
     if (json.containsKey('variations')) {
       for (var data in (json['variations'] as List<dynamic>)) {
-        print(data);
+        // print(data);
         if (variations!.containsKey(data['option']['name'])) {
           variations![data['option']['name']]?.add(VariationModel.fromJson(
               {'id': data['id'], 'value': data['value']}));

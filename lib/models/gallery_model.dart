@@ -9,13 +9,17 @@ class GalleryModel {
 
   GalleryModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    url = json['url'];
+    if (json.containsKey('image')) {
+      url = json['image'];
+    } else if (json.containsKey('url')) {
+      url = json['url'];
+    }
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'url': url,
+      'image': url,
     };
   }
 }

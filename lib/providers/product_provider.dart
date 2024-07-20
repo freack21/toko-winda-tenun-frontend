@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/product_model.dart';
 import 'package:frontend/services/product_service.dart';
@@ -19,7 +20,9 @@ class ProductProvider with ChangeNotifier {
       _products = products;
       notifyListeners(); // Menambahkan notifyListeners agar UI diperbarui
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -30,7 +33,9 @@ class ProductProvider with ChangeNotifier {
       }).toList();
       return relatedProducts;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     return [];
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/order_model.dart';
 import 'package:frontend/services/transaction_service.dart';
@@ -56,8 +57,9 @@ class OrderProvider with ChangeNotifier {
       setOrders(orders);
       return true;
     } catch (e) {
-      print('order');
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     return false;
   }

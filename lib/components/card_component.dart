@@ -249,16 +249,18 @@ class chatTile extends StatelessWidget {
                 Container(
                   width: 54,
                   height: 54,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: authProvider.user.role.contains("ADMIN")
+                          ? cachedNetworkImageProvider(
+                              imageUrl(
+                                chatDocument['user_avatar'],
+                              ),
+                            )
+                          : const AssetImage("assets/logo_twt_chat.jpg"),
+                    ),
                   ),
-                  child: authProvider.user.role.contains("ADMIN")
-                      ? cachedNetworkImage(
-                          imageUrl(
-                            chatDocument['user_avatar'],
-                          ),
-                        )
-                      : Image.asset("assets/image_shop_logo.png"),
                 ),
                 const SizedBox(
                   width: 12,
@@ -983,8 +985,6 @@ class _variationSelectionState extends State<variationSelection> {
                           setState(() {
                             currentIndexs[key] = variant.id;
                           });
-                          print(variationString());
-                          print(variationIds());
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(

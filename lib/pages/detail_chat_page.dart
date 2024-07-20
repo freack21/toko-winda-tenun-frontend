@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/chat_bubble.dart';
@@ -69,12 +70,12 @@ class _DetailChatPageState extends State<DetailChatPage> {
               : widget.product.toJson(),
           'created_at': DateTime.now().toString(),
           'updated_at': DateTime.now().toString(),
-        }).then(
-          (value) => print('Pesan Berhasil Dikirim!'),
-        );
+        });
       } catch (e) {
-        print('Pesan Gagal Dikirim!');
-        print(e);
+        if (kDebugMode) {
+          print('Pesan Gagal Dikirim!');
+          print(e);
+        }
       }
 
       setState(() {
@@ -100,14 +101,16 @@ class _DetailChatPageState extends State<DetailChatPage> {
             Container(
               width: 50,
               height: 50,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: widget.user_avatar != null
+                      ? cachedNetworkImageProvider(
+                          imageUrl(widget.user_avatar),
+                        )
+                      : const AssetImage("assets/logo_twt_chat.jpg"),
+                ),
               ),
-              child: widget.user_avatar != null
-                  ? cachedNetworkImage(
-                      imageUrl(widget.user_avatar),
-                    )
-                  : Image.asset("assets/image_shop_logo.png"),
             ),
             const SizedBox(
               width: 12,
@@ -294,41 +297,42 @@ class _DetailChatPageState extends State<DetailChatPage> {
 
     Widget body() {
       return StreamBuilder<QuerySnapshot>(
-          stream: firestore
-              .collection('messages')
-              .where('user_id', isEqualTo: widget.user_id ?? user.id)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(
-                subtitleColor,
-              )));
-            }
+        stream: firestore
+            .collection('messages')
+            .where('user_id', isEqualTo: widget.user_id ?? user.id)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(
+              subtitleColor,
+            )));
+          }
 
-            var chatDocuments = snapshot.data!.docs;
+          var chatDocuments = snapshot.data!.docs;
 
-            chatDocuments.sort((a, b) {
-              return (DateTime.parse(a['created_at']))
-                  .compareTo(DateTime.parse(b['created_at']));
-            });
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              scrollToBottom();
-            });
-
-            return ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-              itemCount: chatDocuments.length,
-              itemBuilder: (context, index) {
-                return ChatBubble(
-                  chatDocument: chatDocuments[index],
-                );
-              },
-            );
+          chatDocuments.sort((a, b) {
+            return (DateTime.parse(a['created_at']))
+                .compareTo(DateTime.parse(b['created_at']));
           });
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            scrollToBottom();
+          });
+
+          return ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+            itemCount: chatDocuments.length,
+            itemBuilder: (context, index) {
+              return ChatBubble(
+                chatDocument: chatDocuments[index],
+              );
+            },
+          );
+        },
+      );
     }
 
     return Scaffold(

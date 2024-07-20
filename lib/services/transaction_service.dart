@@ -36,7 +36,7 @@ class TransactionService {
       body: body,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
       return true;
@@ -56,7 +56,7 @@ class TransactionService {
       headers: headers,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
       List<OrderModel> orders = [];

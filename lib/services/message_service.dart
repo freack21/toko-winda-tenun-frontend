@@ -45,9 +45,7 @@ class MessageService {
             product is UninitializedProductModel ? {} : product?.toJson(),
         'createdAt': DateTime.now().toString(),
         'updatedAt': DateTime.now().toString(),
-      }).then(
-        (value) => print('Pesan Berhasil Dikirim!'),
-      );
+      });
     } catch (e) {
       throw Exception('Pesan Gagal Dikirim!');
     }
