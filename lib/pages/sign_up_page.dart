@@ -73,20 +73,20 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     inputField(
                         label: "Nama Lengkap",
-                        placeholder: "Nama Lengkap Kamu",
+                        placeholder: "John Doe",
                         icon: "icon_name.png",
                         icond: Icons.person_rounded,
                         marginTop: 50,
                         controller: nameController),
                     inputField(
                         label: "Username",
-                        placeholder: "Username Kamu",
+                        placeholder: "johndoe17",
                         icon: "icon_username.png",
                         icond: Icons.alternate_email_rounded,
                         controller: usernameController),
                     inputField(
                         label: "Nomor Telepon",
-                        placeholder: "Nomor Telepon Anda",
+                        placeholder: "08xxxxxxxx",
                         icon: "icon_headset.png",
                         icond: Icons.phone_rounded,
                         inputType: TextInputType.number,

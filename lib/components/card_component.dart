@@ -189,8 +189,12 @@ class productTile extends StatelessWidget {
 
 class chatTile extends StatelessWidget {
   final DocumentSnapshot chatDocument;
+  final int unreadMessagesCount;
 
-  const chatTile({super.key, required this.chatDocument});
+  const chatTile(
+      {super.key,
+      required this.chatDocument,
+      required this.unreadMessagesCount});
 
   String _getTimeAgo(DateTime createdAt) {
     DateTime now = DateTime.now();
@@ -275,27 +279,75 @@ class chatTile extends StatelessWidget {
                             ? "Toko Winda Tenun"
                             : chatDocument['user_name'],
                         style: primaryTextStyle.copyWith(
-                          fontWeight: medium,
+                          fontWeight: unreadMessagesCount > 0 ? bold : medium,
                           fontSize: 15,
                         ),
                       ),
-                      Text(
-                        chatDocument['text'],
-                        style: subtitleTextStyle.copyWith(
-                          fontWeight: light,
-                          fontSize: 14,
+                      if ((chatDocument.data() as Map<String, dynamic>)
+                          .containsKey('text'))
+                        Text(
+                          chatDocument['text'],
+                          style: subtitleTextStyle.copyWith(
+                            fontWeight:
+                                unreadMessagesCount > 0 ? medium : light,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                      )
+                      if ((chatDocument.data() as Map<String, dynamic>)
+                          .containsKey('image_url'))
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.image,
+                              color: primaryColor,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              'Image',
+                              style: subtitleTextStyle.copyWith(
+                                fontWeight:
+                                    unreadMessagesCount > 0 ? medium : light,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
                 const SizedBox(
                   width: 12,
                 ),
-                Text(
-                  _getTimeAgo(DateTime.parse(chatDocument['created_at'])),
-                  style: subtitleTextStyle.copyWith(fontSize: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      _getTimeAgo(DateTime.parse(chatDocument['created_at'])),
+                      style: subtitleTextStyle.copyWith(
+                        fontSize: 12,
+                        fontWeight:
+                            unreadMessagesCount > 0 ? semiBold : regular,
+                      ),
+                    ),
+                    unreadMessagesCount > 0
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: primaryColor,
+                            ),
+                            child: Text(
+                              unreadMessagesCount.toString(),
+                              style: whiteTextStyle.copyWith(fontSize: 12),
+                            ),
+                          )
+                        : const SizedBox(),
+                  ],
                 )
               ],
             ),
@@ -314,6 +366,8 @@ class cartTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
+
+    bool isNotFound = cart.product is NotFoundProductModel;
 
     Widget button(String text, Color color) {
       return Container(
@@ -343,9 +397,39 @@ class cartTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: cachedNetworkImage(
-                  imageUrl(cart.product?.galleries![0]!.url),
-                  width: 64,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) =>
+                            ProductDetailPage(product: cart.product!),
+                        transitionDuration: const Duration(seconds: 1),
+                        transitionsBuilder: (_, animation, __, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                              position: offsetAnimation, child: child);
+                        },
+                      ),
+                    );
+                  },
+                  child: isNotFound
+                      ? Icon(
+                          Icons.broken_image_rounded,
+                          size: 32,
+                          color: primaryColor,
+                        )
+                      : cachedNetworkImage(
+                          imageUrl(cart.product?.galleries![0]!.url),
+                          width: 64,
+                        ),
                 ),
               ),
               const SizedBox(
@@ -355,39 +439,52 @@ class cartTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      cart.product!.name,
-                      style: blackTextStyle.copyWith(
-                        fontWeight: medium,
-                        fontSize: 15,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    cart.variationString != null &&
-                            cart.variationString!.isNotEmpty
-                        ? Column(
-                            children: [
-                              const SizedBox(
-                                height: 2,
-                              ),
-                              Text(
-                                '[${cart.variationString!}]',
-                                style: subtitleTextStyle.copyWith(fontSize: 12),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                  children: isNotFound
+                      ? [
+                          Text(
+                            "Produk Tidak Tersedia",
+                            style: alertTextStyle.copyWith(
+                              fontWeight: medium,
+                              fontSize: 15,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ]
+                      : [
+                          Text(
+                            cart.product!.name,
+                            style: blackTextStyle.copyWith(
+                              fontWeight: medium,
+                              fontSize: 15,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          cart.variationString != null &&
+                                  cart.variationString!.isNotEmpty
+                              ? Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 2,
+                                    ),
+                                    Text(
+                                      '[${cart.variationString!}]',
+                                      style: subtitleTextStyle.copyWith(
+                                          fontSize: 12),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            formatRupiah(cart.product!.price),
+                            style:
+                                priceTextStyle.copyWith(fontWeight: semiBold),
+                            overflow: TextOverflow.ellipsis,
                           )
-                        : const SizedBox(),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      formatRupiah(cart.product!.price),
-                      style: priceTextStyle.copyWith(fontWeight: semiBold),
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  ],
+                        ],
                 ),
               ),
               const SizedBox(

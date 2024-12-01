@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/modal_component.dart';
@@ -23,15 +24,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     with SingleTickerProviderStateMixin {
   int currentIndex = 0;
   bool isLoading = false;
+  bool isLoadingProduct = true;
   late AnimationController _controller;
+  ProductModel myProduct = NotFoundProductModel();
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getMyProduct();
+    });
+
     super.initState();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+  }
+
+  Future<void> _getMyProduct() async {
+    try {
+      ProductProvider productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
+      myProduct = await productProvider.getProduct(widget.product.id);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      myProduct = NotFoundProductModel();
+    }
+    setState(() {
+      isLoadingProduct = false;
+    });
   }
 
   @override
@@ -98,46 +121,50 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       );
     }
 
+    Widget backAndCart() {
+      return Container(
+        margin: EdgeInsets.only(
+          top: 20,
+          left: defaultMargin,
+          right: defaultMargin,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.chevron_left,
+                color: blackColor,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/cart');
+              },
+              child: Icon(
+                Icons.shopping_bag,
+                color: primaryColor,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     Widget header() {
       int index = -1;
 
       return Column(
         children: [
-          Container(
-            margin: EdgeInsets.only(
-              top: 20,
-              left: defaultMargin,
-              right: defaultMargin,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.chevron_left,
-                    color: blackColor,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/cart');
-                  },
-                  child: Icon(
-                    Icons.shopping_bag,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          backAndCart(),
           const SizedBox(
             height: 20,
           ),
           CarouselSlider(
-            items: widget.product.galleries!
+            items: myProduct.galleries!
                 .map(
                   (image) => cachedNetworkImage(
                     imageUrl(image!.url),
@@ -161,7 +188,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: widget.product.galleries!.map((e) {
+            children: myProduct.galleries!.map((e) {
               index++;
               return indicator(index);
             }).toList(),
@@ -198,14 +225,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.product.name,
+                          myProduct.name,
                           style: primaryTextStyle.copyWith(
                             fontSize: 18,
                             fontWeight: semiBold,
                           ),
                         ),
                         Text(
-                          widget.product.category!.name,
+                          myProduct.category!.name,
                           style: secondaryTextStyle.copyWith(
                             fontSize: 12,
                           ),
@@ -215,9 +242,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                   GestureDetector(
                     onTap: () {
-                      wishlistProvider.setProduct(widget.product);
+                      wishlistProvider.setProduct(myProduct);
 
-                      if (wishlistProvider.isWishlist(widget.product)) {
+                      if (wishlistProvider.isWishlist(myProduct)) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: primaryColor,
@@ -246,7 +273,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       height: 46,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: wishlistProvider.isWishlist(widget.product)
+                          color: wishlistProvider.isWishlist(myProduct)
                               ? primaryColor
                               : subtitleColor),
                       child: Center(
@@ -283,7 +310,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     style: primaryTextStyle,
                   ),
                   Text(
-                    formatRupiah(widget.product.price),
+                    formatRupiah(myProduct.price),
                     style: priceTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,
@@ -314,7 +341,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     height: 12,
                   ),
                   Text(
-                    widget.product.description,
+                    myProduct.description,
                     style: subtitleTextStyle.copyWith(
                       fontWeight: light,
                     ),
@@ -351,7 +378,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: Provider.of<ProductProvider>(context)
-                          .getRelatedProducts(widget.product.category!.name)
+                          .getRelatedProducts(myProduct.category!.name)
                           .map((product_) {
                         index++;
                         return Container(
@@ -379,7 +406,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           context,
                           MaterialPageRoute(
                             builder: (context) => DetailChatPage(
-                              product: widget.product,
+                              product: myProduct,
                             ),
                           ),
                         );
@@ -422,9 +449,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           setState(() {
                             isLoading = true;
                           });
-                          if (widget.product.variations == null ||
-                              widget.product.variations!.keys.isEmpty) {
-                            cartProvider.addCart(widget.product, [], "");
+                          if (myProduct.variations == null ||
+                              myProduct.variations!.keys.isEmpty) {
+                            cartProvider.addCart(myProduct, [], "");
                             showDialog(
                               context: context,
                               builder: (_) => const SuccessAddToCartModal(),
@@ -475,9 +502,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                         SizedBox(
                                           width: double.infinity,
                                           child: variationSelection(
-                                            variations:
-                                                widget.product.variations,
-                                            product: widget.product,
+                                            variations: myProduct.variations,
+                                            product: myProduct,
                                           ),
                                         ),
                                       ],
@@ -523,12 +549,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     return Scaffold(
       backgroundColor: backgroundColor1,
-      body: ListView(
-        children: [
-          header(),
-          content(),
-        ],
-      ),
+      body: isLoadingProduct
+          ? Center(
+              child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(primaryColor),
+            ))
+          : myProduct is NotFoundProductModel
+              ? Column(children: [
+                  backAndCart(),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        "Produk Tidak Tersedia!",
+                        style: primaryTextStyle.copyWith(fontSize: 16),
+                      ),
+                    ),
+                  )
+                ])
+              : ListView(
+                  children: [
+                    header(),
+                    content(),
+                  ],
+                ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/cart_model.dart';
 import 'package:frontend/models/product_model.dart';
@@ -53,21 +54,24 @@ class CartProvider with ChangeNotifier {
   }
 
   removeCart(int id) {
-    _carts.removeAt(id);
+    int index = _carts.indexWhere((element) => element.id == id);
+    _carts.removeAt(index);
     saveCartToPrefs();
     notifyListeners();
   }
 
   addQuantity(int id) {
-    _carts[id].quantity++;
+    int index = _carts.indexWhere((element) => element.id == id);
+    _carts[index].quantity++;
     saveCartToPrefs();
     notifyListeners();
   }
 
   reduceQuantity(int id) {
-    _carts[id].quantity--;
-    if (_carts[id].quantity == 0) {
-      _carts.removeAt(id);
+    int index = _carts.indexWhere((element) => element.id == id);
+    _carts[index].quantity--;
+    if (_carts[index].quantity == 0) {
+      _carts.removeAt(index);
     }
     saveCartToPrefs();
     notifyListeners();

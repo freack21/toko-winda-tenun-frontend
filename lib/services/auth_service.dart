@@ -12,7 +12,7 @@ class AuthService {
     String email = "",
     String password = "",
   }) async {
-    var url = '$baseUrl/register';
+    var url = '$apiBaseUrl/register';
     var headers = {'Content-Type': 'application/json'};
     var body = jsonEncode({
       'name': name,
@@ -36,7 +36,8 @@ class AuthService {
 
       return user;
     } else {
-      throw Exception('Gagal Register');
+      var data = jsonDecode(response.body)['data']['error'];
+      throw Exception(data);
     }
   }
 
@@ -44,7 +45,7 @@ class AuthService {
     String email = "",
     String password = "",
   }) async {
-    var url = '$baseUrl/login';
+    var url = '$apiBaseUrl/login';
     var headers = {'Content-Type': 'application/json'};
     var body = jsonEncode({
       'email': email,
@@ -71,7 +72,7 @@ class AuthService {
   Future<bool> logout({
     String token = "",
   }) async {
-    var url = '$baseUrl/logout';
+    var url = '$apiBaseUrl/logout';
     var headers = {'Authorization': token};
 
     var response = await http.post(
@@ -88,7 +89,7 @@ class AuthService {
   Future<bool> check({
     String token = "",
   }) async {
-    var url = '$baseUrl/user';
+    var url = '$apiBaseUrl/user';
     var headers = {'Authorization': token};
 
     var response = await http.get(
@@ -107,7 +108,7 @@ class AuthService {
     String username = "",
     String token = "",
   }) async {
-    var url = '$baseUrl/user';
+    var url = '$apiBaseUrl/user';
     var headers = {'Content-Type': 'application/json', 'Authorization': token};
     var body = jsonEncode({
       'name': name,
@@ -121,7 +122,7 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      url = '$baseUrl/user';
+      url = '$apiBaseUrl/user';
       headers = {'Content-Type': 'application/json', 'Authorization': token};
 
       response = await http.get(

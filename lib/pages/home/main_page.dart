@@ -54,17 +54,24 @@ class _MainPageState extends State<MainPage> {
     }
 
     Widget bottomNavItem(String icon, int index,
-        {double width = 20, Icon? icons}) {
+        {double width = 20, IconData? icons}) {
       return IconButton(
         iconSize: 32.0,
-        icon: icons ??
-            Image.asset(
-              "assets/$icon",
-              width: width,
-              color: pageProvider.currentIndex == index
-                  ? primaryColor
-                  : const Color(0xff808191),
-            ),
+        icon: icons != null
+            ? Icon(
+                icons,
+                size: width,
+                color: pageProvider.currentIndex == index
+                    ? primaryColor
+                    : const Color(0xff808191),
+              )
+            : Image.asset(
+                "assets/$icon",
+                width: width,
+                color: pageProvider.currentIndex == index
+                    ? primaryColor
+                    : const Color(0xff808191),
+              ),
         onPressed: () {
           pageProvider.currentIndex = index;
         },
@@ -93,10 +100,7 @@ class _MainPageState extends State<MainPage> {
                 bottomNavItem(
                   "icon_wishlist.png",
                   2,
-                  icons: const Icon(
-                    Icons.list_rounded,
-                    size: 20,
-                  ),
+                  icons: Icons.list_rounded,
                 ),
                 bottomNavItem("icon_profile.png", 3),
               ],

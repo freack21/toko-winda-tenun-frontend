@@ -8,8 +8,11 @@ import 'package:frontend/pages/product_detail_page.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/providers/cart_provider.dart';
 import 'package:frontend/theme.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+
+import '../pages/image_fullscreen_page.dart';
 
 class ChatBubble extends StatelessWidget {
   final DocumentSnapshot chatDocument;
@@ -145,6 +148,29 @@ class ChatBubble extends StatelessWidget {
       );
     }
 
+    Widget imageMessage() {
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ImageFullscreenPage(imageUrl: chatDocument['image_url']),
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: cachedNetworkImage(
+            chatDocument['image_url'],
+            width: 200,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
+
     return VisibilityDetector(
       key: Key(chatDocument.id),
       onVisibilityChanged: (visibilityInfo) {
@@ -169,23 +195,59 @@ class ChatBubble extends StatelessWidget {
                   isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 Flexible(
-                  child: Container(
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * .7),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 16),
-                    decoration: BoxDecoration(
-                        color: isSender ? whiteColor : primaryColor,
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(12),
-                          topRight: Radius.circular((isSender ? 0 : 12)),
-                          bottomLeft: Radius.circular((!isSender ? 0 : 12)),
-                          bottomRight: const Radius.circular(12),
-                        )),
-                    child: Text(
-                      chatDocument['text'],
-                      style: isSender ? primaryTextStyle : whiteTextStyle,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: isSender
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      if ((chatDocument.data() as Map<String, dynamic>)
+                          .containsKey('image_url'))
+                        imageMessage(),
+                      if ((chatDocument.data() as Map<String, dynamic>)
+                          .containsKey('text'))
+                        Container(
+                          constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * .7),
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 6, left: 10, right: 10),
+                          decoration: BoxDecoration(
+                            color: isSender ? whiteColor : primaryColor,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(12),
+                              topRight: Radius.circular((isSender ? 0 : 12)),
+                              bottomLeft: Radius.circular((!isSender ? 0 : 12)),
+                              bottomRight: const Radius.circular(12),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: isSender
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                chatDocument['text'],
+                                style: isSender
+                                    ? primaryTextStyle
+                                    : whiteTextStyle,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                DateFormat.Hm().format(
+                                  DateTime.parse(chatDocument['created_at']),
+                                ),
+                                style: (isSender
+                                        ? secondaryTextStyle
+                                        : subtitleTextStyle)
+                                    .copyWith(
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                 )
               ],

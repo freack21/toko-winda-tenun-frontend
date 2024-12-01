@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/components/form_component.dart';
 import 'package:frontend/providers/auth_provider.dart';
@@ -49,6 +50,8 @@ class _CheckoutPageState extends State<CheckoutPage>
     TransactionProvider transactionProvider =
         Provider.of<TransactionProvider>(context);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    String norek = "2201072052";
 
     void showAddressModal() {
       addressController.text = userAddress;
@@ -198,7 +201,7 @@ class _CheckoutPageState extends State<CheckoutPage>
             addressItemTile(
               Icons.store,
               "Alamat Toko",
-              "Jl. Jendral Sudirman, Pekanbaru",
+              "Jl. Inpres Gg. Iklas 1, Perhentian Marpoyan, Kec. Marpoyan Damai, Kota Pekanbaru",
             ),
             Row(
               children: [
@@ -323,6 +326,72 @@ class _CheckoutPageState extends State<CheckoutPage>
                     fontSize: 15,
                     fontWeight: semiBold,
                   ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                    child: Text(
+                  "Bayar Ke",
+                  style: primaryTextStyle.copyWith(fontWeight: semiBold),
+                )),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          norek,
+                          style: primaryTextStyle.copyWith(
+                            fontSize: 15,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        GestureDetector(
+                          child: Icon(
+                            Icons.content_copy_rounded,
+                            size: 16,
+                            color: secondaryTextColor,
+                          ),
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: norek)).then(
+                              (_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: primaryColor,
+                                    content: Text(
+                                      "Nomor rekening berhasil disalin",
+                                      textAlign: TextAlign.center,
+                                      style: whiteTextStyle,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      "BCA a/n Windawati",
+                      style: subtitleTextStyle.copyWith(
+                        fontSize: 13,
+                        fontWeight: semiBold,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

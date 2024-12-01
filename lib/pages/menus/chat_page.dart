@@ -24,6 +24,7 @@ class ChatPage extends StatelessWidget {
           "Message Support",
           style: primaryTextStyle.copyWith(fontSize: 18, fontWeight: medium),
         ),
+        scrolledUnderElevation: 0.0,
         backgroundColor: backgroundColor2,
         centerTitle: true,
         toolbarHeight: 64,
@@ -127,6 +128,7 @@ class ChatPage extends StatelessWidget {
 
               if (user.role.contains("ADMIN")) {
                 var userChatDocuments = <String, DocumentSnapshot>{};
+                var unreadCounts = <String, int>{};
 
                 for (var doc in chatDocuments) {
                   var userId = doc['user_id'].toString();
@@ -139,20 +141,39 @@ class ChatPage extends StatelessWidget {
                     if (newTimestamp.compareTo(existingTimestamp) > 0) {
                       userChatDocuments[userId] = doc;
                     }
+
+                    if (!doc['has_read'] &&
+                        !doc['user_role'].contains(user.role)) {
+                      unreadCounts[userId] = (unreadCounts[userId] ?? 0) + 1;
+                    }
                   } else {
                     userChatDocuments[userId] = doc;
+
+                    if (!doc['has_read'] &&
+                        !doc['user_role'].contains(user.role)) {
+                      unreadCounts[userId] = 1;
+                    }
                   }
                 }
 
                 chatDocuments = userChatDocuments.values.toList();
 
+                chatDocuments.sort((b, a) {
+                  return (DateTime.parse(a['created_at']))
+                      .compareTo(DateTime.parse(b['created_at']));
+                });
+
                 return Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.symmetric(vertical: defaultMargin / 2),
+                    padding: EdgeInsets.only(
+                        top: defaultMargin / 2, bottom: defaultMargin * 4),
                     itemCount: chatDocuments.length,
                     itemBuilder: (context, index) {
                       return chatTile(
                         chatDocument: chatDocuments[index],
+                        unreadMessagesCount: unreadCounts[
+                                chatDocuments[index]['user_id'].toString()] ??
+                            0,
                       );
                     },
                   ),
@@ -166,10 +187,15 @@ class ChatPage extends StatelessWidget {
 
               return Expanded(
                 child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: defaultMargin / 2),
+                  padding: EdgeInsets.only(
+                      top: defaultMargin / 2, bottom: defaultMargin * 4),
                   children: [
                     chatTile(
                       chatDocument: chatDocuments[chatDocuments.length - 1],
+                      unreadMessagesCount: chatDocuments
+                          .where((doc) => (!doc['has_read'] &&
+                              !doc['user_role'].contains(user.role)))
+                          .length,
                     )
                   ],
                 ),

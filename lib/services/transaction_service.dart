@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class TransactionService {
   Future<bool> checkout(String token, List<CartModel> carts, double totalPrice,
       String userAddress) async {
-    var url = '$baseUrl/checkout';
+    var url = '$apiBaseUrl/checkout';
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': token,
@@ -46,7 +46,7 @@ class TransactionService {
   }
 
   Future<List<OrderModel>> getTransactions(String token) async {
-    var url = '$baseUrl/transactions';
+    var url = '$apiBaseUrl/transactions';
     var headers = {
       'Authorization': token,
     };

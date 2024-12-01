@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -58,7 +59,7 @@ TextStyle alertTextStyle = GoogleFonts.poppins(
   color: alertColor,
 );
 
-String baseUrl = 'https://tenunsongketwindah.com/api';
+String apiBaseUrl = dotenv.env["API_BASE_URL"] ?? "https://link.com/api";
 
 String capitalizeFirstLowerRest(String str) {
   if (str.isEmpty) return str;
@@ -67,7 +68,7 @@ String capitalizeFirstLowerRest(String str) {
 
 String imageUrl(String? url) {
   if (url!.contains("://")) return url;
-  return "https://tenunsongketwindah.com/storage/$url";
+  return "${dotenv.env['STORAGE_BASE_URL'] ?? "https://link.com/storage"}/$url";
 }
 
 String formatRupiah(double amount) {

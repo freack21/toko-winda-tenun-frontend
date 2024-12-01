@@ -38,7 +38,7 @@ class AuthProvider with ChangeNotifier {
     await prefs.setString('user', jsonEncode(user.toJson()));
   }
 
-  Future<bool> register({
+  Future<List> register({
     String name = "",
     String username = "",
     String phone = "",
@@ -55,12 +55,12 @@ class AuthProvider with ChangeNotifier {
       );
 
       setUser(user);
-      return true;
+      return [true];
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
-      return false;
+      return [false, e];
     }
   }
 

@@ -36,17 +36,17 @@ class _SignInPageState extends State<SignInPage> {
         email: emailController.text,
         password: passwordController.text,
       )) {
-        if (!mounted) return;
+        if (!context.mounted) return;
         CartProvider cartProvider =
             Provider.of<CartProvider>(context, listen: false);
         cartProvider.userId = authProvider.user.id;
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         WishlistProvider wishlistProvider =
             Provider.of<WishlistProvider>(context, listen: false);
         wishlistProvider.userId = authProvider.user.id;
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         OrderProvider orderProvider =
             Provider.of<OrderProvider>(context, listen: false);
         orderProvider.userId = authProvider.user.id;
@@ -132,7 +132,7 @@ class _SignInPageState extends State<SignInPage> {
                   children: [
                     inputField(
                       label: "Email",
-                      placeholder: "Email Kamu",
+                      placeholder: "johndoe@email.com",
                       icon: "email_icon.png",
                       icond: Icons.email_rounded,
                       inputType: TextInputType.emailAddress,
@@ -141,7 +141,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     inputField(
                       label: "Password",
-                      placeholder: "Password Kamu",
+                      placeholder: "******",
                       icon: "icon_password.png",
                       icond: Icons.lock_rounded,
                       isPassword: true,

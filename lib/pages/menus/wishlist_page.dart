@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/product_model.dart';
+import 'package:frontend/pages/home/main_page.dart';
 import 'package:frontend/providers/page_provider.dart';
 import 'package:frontend/providers/wishlist_provider.dart';
 import 'package:frontend/theme.dart';
@@ -17,7 +18,6 @@ class WishlistPage extends StatelessWidget {
     PreferredSizeWidget header() {
       return AppBar(
         centerTitle: true,
-        automaticallyImplyLeading: false,
         title: Text(
           "Produk Favorit",
           style: primaryTextStyle.copyWith(
@@ -75,6 +75,25 @@ class WishlistPage extends StatelessWidget {
               TextButton(
                   onPressed: () {
                     pageProvider.currentIndex = 0;
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => const MainPage(),
+                        transitionDuration: const Duration(seconds: 1),
+                        transitionsBuilder: (_, animation, __, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                              position: offsetAnimation, child: child);
+                        },
+                      ),
+                    );
                   },
                   style: TextButton.styleFrom(
                       backgroundColor: primaryColor,

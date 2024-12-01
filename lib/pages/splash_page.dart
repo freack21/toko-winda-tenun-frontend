@@ -33,6 +33,7 @@ class _SplashPageState extends State<SplashPage> {
       try {
         ProductProvider productProvider =
             Provider.of<ProductProvider>(context, listen: false);
+        await productProvider.getCategories();
         await productProvider.getProducts();
 
         if (!mounted) return;

@@ -35,24 +35,25 @@ class _SignUp2PageState extends State<SignUp2Page> {
         isLoading = true;
       });
 
-      if (await authProvider.register(
+      List resReg = await authProvider.register(
         name: arguments['name'],
         username: arguments['username'],
         phone: arguments['phone'],
         email: emailController.text,
         password: passwordController.text,
-      )) {
-        if (!mounted) return;
+      );
+      if (resReg[0]) {
+        if (!context.mounted) return;
         CartProvider cartProvider =
             Provider.of<CartProvider>(context, listen: false);
         cartProvider.userId = authProvider.user.id;
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         WishlistProvider wishlistProvider =
             Provider.of<WishlistProvider>(context, listen: false);
         wishlistProvider.userId = authProvider.user.id;
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         OrderProvider orderProvider =
             Provider.of<OrderProvider>(context, listen: false);
         orderProvider.userId = authProvider.user.id;
@@ -70,7 +71,7 @@ class _SignUp2PageState extends State<SignUp2Page> {
           SnackBar(
             backgroundColor: alertColor,
             content: Text(
-              'Gagal Register!',
+              'Gagal Register!\n${resReg[1]}',
               textAlign: TextAlign.center,
               style: whiteTextStyle,
             ),
@@ -138,7 +139,7 @@ class _SignUp2PageState extends State<SignUp2Page> {
                   children: [
                     inputField(
                         label: "Email",
-                        placeholder: "Email Kamu",
+                        placeholder: "johndoe@email.com",
                         icon: "email_icon.png",
                         icond: Icons.email_rounded,
                         inputType: TextInputType.emailAddress,
@@ -146,7 +147,7 @@ class _SignUp2PageState extends State<SignUp2Page> {
                         controller: emailController),
                     inputField(
                         label: "Password",
-                        placeholder: "Password Kamu",
+                        placeholder: "******",
                         icon: "icon_password.png",
                         icond: Icons.lock_rounded,
                         isPassword: true,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/user_model.dart';
@@ -36,6 +37,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
+    }
+  }
+
+  void _launchInBrowser() async {
+    if (!await launchUrl(
+      Uri.parse(
+          "https://play.google.com/store/apps/details?id=com.tokowindatenun.frontend"),
+      mode: LaunchMode.externalApplication,
+    )) {
+      if (kDebugMode) {
+        print('Could not launch play google');
+      }
     }
   }
 
@@ -185,8 +198,15 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(
                 height: 5,
               ),
-              itemMenu("Ketentuan & Kebijakan"),
-              itemMenu("Beri Nilai Aplikasi"),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/privacy-policy");
+                },
+                child: itemMenu("Ketentuan & Kebijakan"),
+              ),
+              GestureDetector(
+                  onTap: _launchInBrowser,
+                  child: itemMenu("Beri Nilai Aplikasi")),
             ],
           ),
         ),

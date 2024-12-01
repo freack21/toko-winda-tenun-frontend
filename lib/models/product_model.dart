@@ -86,3 +86,5 @@ class ProductModel {
 }
 
 class UninitializedProductModel extends ProductModel {}
+
+class NotFoundProductModel extends ProductModel {}

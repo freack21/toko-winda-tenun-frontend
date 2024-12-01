@@ -22,6 +22,7 @@ class OrderPage extends StatelessWidget {
       try {
         ProductProvider productProvider =
             Provider.of<ProductProvider>(context, listen: false);
+        await productProvider.getCategories();
         await productProvider.getProducts();
 
         if (!context.mounted) return;
@@ -40,6 +41,7 @@ class OrderPage extends StatelessWidget {
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor2,
+        automaticallyImplyLeading: false,
         centerTitle: true,
         iconTheme: IconThemeData(
           color: primaryColor,
