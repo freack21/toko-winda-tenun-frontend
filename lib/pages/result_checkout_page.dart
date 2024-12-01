@@ -10,6 +10,7 @@ class ResultCheckoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
+    PageProvider pageProvider = Provider.of<PageProvider>(context);
 
     bool isSuccess = arguments['isSuccess'];
 
@@ -50,9 +51,7 @@ class ResultCheckoutPage extends StatelessWidget {
                 ),
               ),
               Text(
-                isSuccess
-                    ? "Kamu berhasil membuat transaksi"
-                    : "Transaksi gagal!",
+                isSuccess ? "Checkout berhasil!" : "Checkout gagal!",
                 style: (isSuccess ? primaryTextStyle : alertTextStyle)
                     .copyWith(fontWeight: semiBold, fontSize: 18),
                 textAlign: TextAlign.center,
@@ -99,7 +98,8 @@ class ResultCheckoutPage extends StatelessWidget {
                       if (!isSuccess) {
                         Navigator.popAndPushNamed(context, '/cart');
                       } else {
-                        Navigator.pushNamed(context, "/order");
+                        pageProvider.currentIndex = 2;
+                        Navigator.pushNamed(context, "/home");
                       }
                     },
                     style: TextButton.styleFrom(

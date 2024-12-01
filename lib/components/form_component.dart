@@ -35,13 +35,14 @@ class inputField extends StatelessWidget {
             style: primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
           ),
           const SizedBox(
-            height: 12,
+            height: 6,
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-                color: backgroundColor2,
-                borderRadius: BorderRadius.circular(12)),
+                color: inputColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: primaryColor)),
             child: Center(
               child: Row(
                 children: [
@@ -60,31 +61,36 @@ class inputField extends StatelessWidget {
                     width: 16,
                   ),
                   Expanded(
-                      child: TextFormField(
-                    style: primaryTextStyle,
-                    obscureText: isPassword,
-                    controller: controller,
-                    keyboardType: inputType,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "${capitalizeFirstLowerRest(label)} tidak boleh kosong!";
-                      } else if (label.toLowerCase().contains("email") &&
-                          !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                              .hasMatch(value)) {
-                        return 'Harap masukkan email yang valid!';
-                      } else if (label.toLowerCase().contains("username") &&
-                          !RegExp(r'^[a-z_]+$').hasMatch(value)) {
-                        return 'Nama pengguna harus huruf kecil, tidak ada spasi, dan simbol "_" dan angka!';
-                      }
-                      return null;
-                    },
-                    scrollPadding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    decoration: InputDecoration.collapsed(
-                      hintText: placeholder,
-                      hintStyle: subtitleTextStyle,
+                    child: TextFormField(
+                      style: primaryTextStyle,
+                      obscureText: isPassword,
+                      controller: controller,
+                      keyboardType: inputType,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "${capitalizeFirstLowerRest(label)} tidak boleh kosong!";
+                        } else if (label.toLowerCase().contains("email") &&
+                            !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                .hasMatch(value)) {
+                          return 'Harap masukkan email yang valid!';
+                        } else if (label.toLowerCase().contains("username") &&
+                            !RegExp(r'^[a-z_]+$').hasMatch(value)) {
+                          return 'Nama pengguna harus huruf kecil, tidak ada spasi, dan simbol "_" dan angka!';
+                        }
+                        return null;
+                      },
+                      scrollPadding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      decoration: InputDecoration.collapsed(
+                        hintText: placeholder,
+                        hintStyle: subtitleTextStyle,
+                      ),
+                      onTapOutside: (event) {
+                        FocusScope.of(context).unfocus();
+                      },
+                      cursorColor: primaryColor,
                     ),
-                  ))
+                  )
                 ],
               ),
             ),
@@ -119,8 +125,9 @@ Widget editProfileField(String label, String placeholder, BuildContext context,
             hintText: placeholder,
             hintStyle: subtitleTextStyle.copyWith(fontSize: 14),
           ),
-          scrollPadding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          scrollPadding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
         )
       ],
     ),

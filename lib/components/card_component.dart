@@ -47,9 +47,19 @@ class productCard extends StatelessWidget {
       child: Container(
         width: 215,
         height: 278,
-        margin: const EdgeInsets.symmetric(horizontal: 15),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-            color: backgroundColor2, borderRadius: BorderRadius.circular(20)),
+          color: backgroundColor2,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 2,
+              blurRadius: 12,
+              offset: const Offset(0, 0), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -132,22 +142,32 @@ class productTile extends StatelessWidget {
       },
       child: Container(
         margin: EdgeInsets.only(
-            bottom: defaultMargin / 1.5,
-            left: defaultMargin,
-            right: defaultMargin),
-        padding: const EdgeInsets.all(10),
+          bottom: defaultMargin / 1.5,
+          left: defaultMargin,
+          right: defaultMargin,
+        ),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            shape: BoxShape.rectangle,
-            color: secondaryColor),
+          borderRadius: BorderRadius.circular(12),
+          shape: BoxShape.rectangle,
+          color: secondaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 2,
+              blurRadius: 12,
+              offset: const Offset(0, 0), // changes position of shadow
+            ),
+          ],
+        ),
         child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: cachedNetworkImage(
                 imageUrl(product.galleries?[0]?.url),
-                width: 100,
-                height: 100,
+                width: 75,
+                height: 75,
                 fit: BoxFit.cover,
               ),
             ),
@@ -160,22 +180,27 @@ class productTile extends StatelessWidget {
                 children: [
                   Text(
                     product.category!.name,
-                    style: secondaryTextStyle.copyWith(fontSize: 12),
+                    style: secondaryTextStyle.copyWith(fontSize: 11),
                   ),
                   const SizedBox(
-                    height: 6,
+                    height: 0,
                   ),
                   Text(
                     product.name,
                     style: blackTextStyle.copyWith(
-                        fontWeight: semiBold, fontSize: 16),
+                      fontWeight: semiBold,
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(
                     height: 6,
                   ),
                   Text(
                     formatRupiah(product.price),
-                    style: priceTextStyle.copyWith(fontWeight: medium),
+                    style: priceTextStyle.copyWith(
+                      fontWeight: medium,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -191,10 +216,11 @@ class chatTile extends StatelessWidget {
   final DocumentSnapshot chatDocument;
   final int unreadMessagesCount;
 
-  const chatTile(
-      {super.key,
-      required this.chatDocument,
-      required this.unreadMessagesCount});
+  const chatTile({
+    super.key,
+    required this.chatDocument,
+    required this.unreadMessagesCount,
+  });
 
   String _getTimeAgo(DateTime createdAt) {
     DateTime now = DateTime.now();
@@ -219,31 +245,59 @@ class chatTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DetailChatPage(
-                      product: UninitializedProductModel(),
-                      user_id: authProvider.user.role.contains("ADMIN")
-                          ? chatDocument['user_id']
-                          : null,
-                      user_avatar: authProvider.user.role.contains("ADMIN")
-                          ? chatDocument['user_avatar']
-                          : null,
-                      user_name: authProvider.user.role.contains("ADMIN")
-                          ? chatDocument['user_name']
-                          : null,
-                    )));
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                DetailChatPage(
+              product: UninitializedProductModel(),
+              user_id: authProvider.user.role.contains("ADMIN")
+                  ? chatDocument['user_id']
+                  : null,
+              user_avatar: authProvider.user.role.contains("ADMIN")
+                  ? chatDocument['user_avatar']
+                  : null,
+              user_name: authProvider.user.role.contains("ADMIN")
+                  ? chatDocument['user_name']
+                  : null,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0); // Mulai dari kanan layar
+              const end = Offset.zero; // Berakhir di posisi default
+              const curve = Curves.easeInOut;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(
-            bottom: defaultMargin / 2,
-            left: defaultMargin,
-            right: defaultMargin),
+          bottom: defaultMargin / 2,
+          left: defaultMargin,
+          right: defaultMargin,
+        ),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            shape: BoxShape.rectangle,
-            color: secondaryColor),
+          borderRadius: BorderRadius.circular(12),
+          shape: BoxShape.rectangle,
+          color: secondaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 4), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -283,10 +337,11 @@ class chatTile extends StatelessWidget {
                           fontSize: 15,
                         ),
                       ),
+                      const SizedBox(height: 3),
                       if ((chatDocument.data() as Map<String, dynamic>)
                           .containsKey('text'))
                         Text(
-                          chatDocument['text'],
+                          "${(chatDocument['text'] as String).split("\n")[0]}${(chatDocument['text'] as String).contains("\n") ? '...' : ''}",
                           style: subtitleTextStyle.copyWith(
                             fontWeight:
                                 unreadMessagesCount > 0 ? medium : light,
@@ -305,7 +360,7 @@ class chatTile extends StatelessWidget {
                             ),
                             const SizedBox(width: 2),
                             Text(
-                              'Image',
+                              'Gambar',
                               style: subtitleTextStyle.copyWith(
                                 fontWeight:
                                     unreadMessagesCount > 0 ? medium : light,
@@ -385,10 +440,23 @@ class cartTile extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(
-          bottom: defaultMargin / 2, left: defaultMargin, right: defaultMargin),
+        bottom: defaultMargin / 2,
+        left: defaultMargin,
+        right: defaultMargin,
+      ),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12), color: secondaryColor),
+        borderRadius: BorderRadius.circular(12),
+        color: secondaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 4), // changes position of shadow
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -675,14 +743,22 @@ class orderTile extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(
-        bottom: defaultMargin / 2,
-        left: defaultMargin / 2,
-        right: defaultMargin / 2,
+        bottom: defaultMargin,
+        left: defaultMargin,
+        right: defaultMargin,
       ),
-      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: secondaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

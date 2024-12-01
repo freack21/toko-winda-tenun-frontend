@@ -336,10 +336,11 @@ class _CheckoutPageState extends State<CheckoutPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                    child: Text(
-                  "Bayar Ke",
-                  style: primaryTextStyle.copyWith(fontWeight: semiBold),
-                )),
+                  child: Text(
+                    "Bayar Ke",
+                    style: primaryTextStyle.copyWith(fontWeight: semiBold),
+                  ),
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -392,6 +393,25 @@ class _CheckoutPageState extends State<CheckoutPage>
                       ),
                     ),
                   ],
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    "*Kirim bukti pembayaran\nvia chat, ya!",
+                    style: primaryTextStyle.copyWith(
+                      fontWeight: medium,
+                      color: alertColor,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
                 ),
               ],
             ),

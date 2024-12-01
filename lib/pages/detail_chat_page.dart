@@ -1,7 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -95,19 +93,6 @@ class _DetailChatPageState extends State<DetailChatPage> {
                 )),
           ),
         );
-
-        // // Kirim gambar ke backend
-        // final request = http.MultipartRequest(
-        //   'POST',
-        //   Uri.parse('$apiBaseUrl/save-image'),
-        // );
-        // request.files
-        //     .add(await http.MultipartFile.fromPath('image', imageFile.path));
-        // // request.files.add(http.MultipartFile.fromBytes(
-        // //     'image', await imageFile.readAsBytes(),
-        // //     filename: imageFile.name));
-
-        // final response = await request.send();
 
         final dio = Dio();
         final formData = FormData.fromMap({
@@ -236,14 +221,6 @@ class _DetailChatPageState extends State<DetailChatPage> {
                   style: primaryTextStyle.copyWith(
                       fontWeight: medium, fontSize: 16),
                 ),
-                // const SizedBox(
-                //   height: 4,
-                // ),
-                // Text(
-                //   "Online",
-                //   style: subtitleTextStyle.copyWith(
-                //       fontWeight: light, fontSize: 14),
-                // )
               ],
             )
           ],
@@ -350,22 +327,73 @@ class _DetailChatPageState extends State<DetailChatPage> {
                         ),
                       ],
                     ),
-                  )),
+                  ),
+                ),
           Container(
-            padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+            padding: const EdgeInsets.only(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              top: 5,
+            ),
             color: transparentColor,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                Expanded(
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxHeight: 200,
+                      minHeight: 45,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: backgroundColor2,
+                      border: Border.all(
+                        color: primaryColor,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      child: TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        controller: messageController,
+                        style: blackTextStyle,
+                        maxLines: null,
+                        minLines: 1,
+                        decoration: InputDecoration.collapsed(
+                          hintText: "Ketik pesan..",
+                          hintStyle: subtitleTextStyle,
+                        ),
+                        onTapOutside: (event) {
+                          FocusScope.of(context).unfocus();
+                        },
+                        cursorColor: primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
                 GestureDetector(
                   onTap: handleSendImage,
                   child: Container(
                     width: 45,
                     height: 45,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: backgroundColor2,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: primaryColor,
+                      ),
                     ),
                     child: Center(
                       child: Icon(
@@ -377,38 +405,15 @@ class _DetailChatPageState extends State<DetailChatPage> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    height: 45,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      // border: Border.all(color: subtitleColor),
-                      color: backgroundColor2,
-                    ),
-                    child: Center(
-                      child: TextFormField(
-                        controller: messageController,
-                        style: blackTextStyle,
-                        decoration: InputDecoration.collapsed(
-                          hintText: "Ketik pesan..",
-                          hintStyle: subtitleTextStyle,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
                 GestureDetector(
                   onTap: handleAddMessage,
                   child: Container(
                     width: 45,
                     height: 45,
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 12),
+                      vertical: 12,
+                      horizontal: 12,
+                    ),
                     decoration: BoxDecoration(
                         color: primaryColor,
                         borderRadius: BorderRadius.circular(12)),
@@ -459,13 +464,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
             controller: _scrollController,
             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
             itemCount: chatDocuments.length,
-            // itemBuilder: (context, index) {
-            //   return ChatBubble(
-            //     chatDocument: chatDocuments[index],
-            //   );
-            // },
             itemBuilder: (context, index) {
-              // Parse the current message's timestamp
               DateTime currentCreatedAt =
                   DateTime.parse(chatDocuments[index]['created_at']);
               DateTime? previousCreatedAt;
@@ -484,7 +483,6 @@ class _DetailChatPageState extends State<DetailChatPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Display the time label if necessary
                   if (showTimeLabel)
                     Center(
                       child: Container(
@@ -506,7 +504,6 @@ class _DetailChatPageState extends State<DetailChatPage> {
                         ),
                       ),
                     ),
-                  // Display the chat bubble
                   ChatBubble(
                     chatDocument: chatDocuments[index],
                   ),

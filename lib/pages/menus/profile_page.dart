@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/components/card_component.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:frontend/providers/auth_provider.dart';
@@ -48,6 +49,17 @@ class _ProfilePageState extends State<ProfilePage> {
     )) {
       if (kDebugMode) {
         print('Could not launch play google');
+      }
+    }
+  }
+
+  void _launchInBrowserPrivacyPolicy() async {
+    if (!await launchUrl(
+      Uri.parse("${dotenv.env['BASE_URL']}/privacy.html"),
+      mode: LaunchMode.externalApplication,
+    )) {
+      if (kDebugMode) {
+        print('Could not launch chrome');
       }
     }
   }
@@ -102,9 +114,11 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               isLoading
                   ? CircularProgressIndicator(
+                      strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation(
-                      whiteColor,
-                    ))
+                        whiteColor,
+                      ),
+                    )
                   : GestureDetector(
                       onTap: () async {
                         setState(() {
@@ -199,9 +213,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: 5,
               ),
               GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, "/privacy-policy");
-                },
+                onTap: _launchInBrowserPrivacyPolicy,
+                // onTap: () {
+                //   Navigator.pushNamed(context, "/privacy-policy");
+                // },
                 child: itemMenu("Ketentuan & Kebijakan"),
               ),
               GestureDetector(

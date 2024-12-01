@@ -110,11 +110,14 @@ class ChatPage extends StatelessWidget {
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                      subtitleColor,
-                    )),
+                  child: Container(
+                    color: backgroundColor1,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(
+                        subtitleColor,
+                      )),
+                    ),
                   ),
                 );
               }
@@ -164,18 +167,21 @@ class ChatPage extends StatelessWidget {
                 });
 
                 return Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.only(
-                        top: defaultMargin / 2, bottom: defaultMargin * 4),
-                    itemCount: chatDocuments.length,
-                    itemBuilder: (context, index) {
-                      return chatTile(
-                        chatDocument: chatDocuments[index],
-                        unreadMessagesCount: unreadCounts[
-                                chatDocuments[index]['user_id'].toString()] ??
-                            0,
-                      );
-                    },
+                  child: Container(
+                    color: backgroundColor1,
+                    child: ListView.builder(
+                      padding: EdgeInsets.only(
+                          top: defaultMargin / 2, bottom: defaultMargin * 4),
+                      itemCount: chatDocuments.length,
+                      itemBuilder: (context, index) {
+                        return chatTile(
+                          chatDocument: chatDocuments[index],
+                          unreadMessagesCount: unreadCounts[
+                                  chatDocuments[index]['user_id'].toString()] ??
+                              0,
+                        );
+                      },
+                    ),
                   ),
                 );
               }
@@ -186,18 +192,23 @@ class ChatPage extends StatelessWidget {
               });
 
               return Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(
-                      top: defaultMargin / 2, bottom: defaultMargin * 4),
-                  children: [
-                    chatTile(
-                      chatDocument: chatDocuments[chatDocuments.length - 1],
-                      unreadMessagesCount: chatDocuments
-                          .where((doc) => (!doc['has_read'] &&
-                              !doc['user_role'].contains(user.role)))
-                          .length,
-                    )
-                  ],
+                child: Container(
+                  color: backgroundColor1,
+                  child: ListView(
+                    padding: EdgeInsets.only(
+                      top: defaultMargin / 2,
+                      bottom: defaultMargin * 4,
+                    ),
+                    children: [
+                      chatTile(
+                        chatDocument: chatDocuments[chatDocuments.length - 1],
+                        unreadMessagesCount: chatDocuments
+                            .where((doc) => (!doc['has_read'] &&
+                                !doc['user_role'].contains(user.role)))
+                            .length,
+                      )
+                    ],
+                  ),
                 ),
               );
             }),

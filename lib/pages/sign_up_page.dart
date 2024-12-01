@@ -72,25 +72,20 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Column(
                   children: [
                     inputField(
-                        label: "Nama Lengkap",
-                        placeholder: "John Doe",
-                        icon: "icon_name.png",
-                        icond: Icons.person_rounded,
-                        marginTop: 50,
-                        controller: nameController),
+                      label: "Nama Lengkap",
+                      placeholder: "John Doe",
+                      icon: "icon_name.png",
+                      icond: Icons.person_rounded,
+                      marginTop: 50,
+                      controller: nameController,
+                    ),
                     inputField(
-                        label: "Username",
-                        placeholder: "johndoe17",
-                        icon: "icon_username.png",
-                        icond: Icons.alternate_email_rounded,
-                        controller: usernameController),
-                    inputField(
-                        label: "Nomor Telepon",
-                        placeholder: "08xxxxxxxx",
-                        icon: "icon_headset.png",
-                        icond: Icons.phone_rounded,
-                        inputType: TextInputType.number,
-                        controller: phoneController),
+                      label: "Username",
+                      placeholder: "johndoe17",
+                      icon: "icon_username.png",
+                      icond: Icons.alternate_email_rounded,
+                      controller: usernameController,
+                    ),
                   ],
                 ),
               ),
@@ -98,7 +93,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Navigator.pushNamed(context, "/sign-up2", arguments: {
                   'name': nameController.text,
                   'username': usernameController.text,
-                  'phone': phoneController.text,
+                  'phone': null,
                 });
               }, key: _formKey),
               const Spacer(),

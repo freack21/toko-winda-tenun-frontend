@@ -88,8 +88,18 @@ class _MainPageState extends State<MainPage> {
           clipBehavior: Clip.antiAlias,
           color: transparentColor,
           child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor2,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  spreadRadius: 0,
+                  blurRadius: 8,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
             padding: EdgeInsets.symmetric(horizontal: defaultMargin / 2),
-            color: backgroundColor2,
             height: 75,
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -118,12 +128,14 @@ class _MainPageState extends State<MainPage> {
         }
         final now = DateTime.now();
         if (lastPressed == null ||
-            now.difference(lastPressed!) > const Duration(seconds: 1)) {
+            now.difference(lastPressed!) > const Duration(seconds: 2)) {
           lastPressed = now;
           Fluttertoast.showToast(
             msg: "Tekan sekali lagi untuk keluar",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
+            backgroundColor: backgroundColor2,
+            textColor: primaryColor,
           );
         } else {
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -138,11 +150,16 @@ class _MainPageState extends State<MainPage> {
         body: PageTransitionSwitcher(
           duration: const Duration(milliseconds: 500),
           transitionBuilder: (child, animation, secondaryAnimation) {
-            return FadeThroughTransition(
-              animation: animation,
-              secondaryAnimation: secondaryAnimation,
-              child: child,
-            );
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(
+              curve: curve,
+            ));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(position: offsetAnimation, child: child);
           },
           child: body(),
         ),

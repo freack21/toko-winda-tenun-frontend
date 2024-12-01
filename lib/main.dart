@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
       '/sign-up2': const SignUp2Page(),
       '/home': const MainPage(),
       '/cart': const CartPage(),
-      '/order': const OrderPage(),
       '/wishlist': const WishlistPage(),
       '/checkout': const CheckoutPage(),
       '/checkout-result': const ResultCheckoutPage(),

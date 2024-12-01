@@ -147,10 +147,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: EdgeInsets.only(right: defaultMargin, left: defaultMargin),
         child: Column(
           children: [
-            editProfileField("Nama Lengkap", user.name, context,
-                controller: nameController),
-            editProfileField("Username", user.username, context,
-                controller: usernameController),
+            inputField(
+              label: "Nama Lengkap",
+              placeholder: user.name,
+              icond: Icons.person,
+              inputType: TextInputType.name,
+              controller: nameController,
+              marginTop: 0,
+            ),
+            inputField(
+              label: "Username",
+              placeholder: user.username,
+              icond: Icons.alternate_email_rounded,
+              inputType: TextInputType.name,
+              controller: usernameController,
+              marginTop: 20,
+            ),
           ],
         ),
       );

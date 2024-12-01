@@ -82,7 +82,9 @@ class OrderPage extends StatelessWidget {
                   Text(
                     "Ups! Kamu belum punya pesanan nih..",
                     style: primaryTextStyle.copyWith(
-                        fontSize: 16, fontWeight: medium),
+                      fontSize: 16,
+                      fontWeight: medium,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(
@@ -99,8 +101,9 @@ class OrderPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: primaryColor),
+                      borderRadius: BorderRadius.circular(12),
+                      color: primaryColor,
+                    ),
                     child: TextButton(
                       onPressed: () {
                         pageProvider.currentIndex = 0;
@@ -132,6 +135,9 @@ class OrderPage extends StatelessWidget {
                       order: order,
                     ))
                 .toList(),
+          ),
+          SizedBox(
+            height: defaultMargin,
           ),
         ],
       );

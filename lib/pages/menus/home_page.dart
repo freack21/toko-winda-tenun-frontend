@@ -260,6 +260,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
+      backgroundColor: backgroundColor1,
       body: RefreshIndicator(
         onRefresh: _pullRefresh,
         color: primaryColor,

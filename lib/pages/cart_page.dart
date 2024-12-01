@@ -174,9 +174,21 @@ class _CartPageState extends State<CartPage> {
                 left: defaultMargin / 2,
                 right: defaultMargin / 2),
             padding: EdgeInsets.symmetric(
-                horizontal: defaultMargin / 1.5, vertical: defaultMargin / 2),
+              horizontal: defaultMargin / 1.5,
+              vertical: defaultMargin / 2,
+            ),
             decoration: BoxDecoration(
-                color: whiteColor, borderRadius: BorderRadius.circular(10)),
+              color: whiteColor,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.25),
+                  spreadRadius: 0,
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -198,13 +210,15 @@ class _CartPageState extends State<CartPage> {
               color: whiteColor,
             ),
             padding: EdgeInsets.symmetric(
-                vertical: defaultMargin / 2, horizontal: defaultMargin),
+              vertical: defaultMargin / 2,
+              horizontal: defaultMargin,
+            ),
             child: Column(
               children: [
                 Text(
-                  "Pastikan sebelum membeli Anda sudah menanyakan produk ke seller!",
-                  style: alertTextStyle,
-                  textAlign: TextAlign.center,
+                  "*Pastikan sebelum membeli Anda sudah menanyakan produk ke seller!",
+                  style: alertTextStyle.copyWith(fontSize: 13),
+                  textAlign: TextAlign.left,
                 ),
                 const SizedBox(
                   height: 8,
