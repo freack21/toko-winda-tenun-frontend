@@ -43,6 +43,9 @@ class ChatBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSender ? whiteColor : primaryColor,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: primaryColor,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -113,10 +113,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 width: 12,
               ),
               isLoading
-                  ? CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(
-                        whiteColor,
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(
+                          whiteColor,
+                        ),
                       ),
                     )
                   : GestureDetector(

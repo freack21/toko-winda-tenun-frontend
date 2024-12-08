@@ -41,7 +41,7 @@ class AuthProvider with ChangeNotifier {
   Future<List> register({
     String name = "",
     String username = "",
-    String phone = "",
+    String? phone,
     String email = "",
     String password = "",
   }) async {

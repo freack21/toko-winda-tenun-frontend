@@ -53,28 +53,42 @@ class _MainPageState extends State<MainPage> {
       );
     }
 
-    Widget bottomNavItem(String icon, int index,
-        {double width = 20, IconData? icons}) {
-      return IconButton(
-        iconSize: 32.0,
-        icon: icons != null
-            ? Icon(
-                icons,
-                size: width,
-                color: pageProvider.currentIndex == index
-                    ? primaryColor
-                    : const Color(0xff808191),
-              )
-            : Image.asset(
-                "assets/$icon",
-                width: width,
-                color: pageProvider.currentIndex == index
-                    ? primaryColor
-                    : const Color(0xff808191),
-              ),
-        onPressed: () {
+    Widget bottomNavItem(
+      String icon,
+      int index, {
+      double width = 18,
+      IconData? icons,
+    }) {
+      return GestureDetector(
+        onTap: () {
           pageProvider.currentIndex = index;
         },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: pageProvider.currentIndex != index
+                ? primaryColor
+                : const Color(0xffffffff),
+          ),
+          child: Center(
+            child: icons != null
+                ? Icon(
+                    icons,
+                    size: width,
+                    color: pageProvider.currentIndex == index
+                        ? primaryColor
+                        : const Color(0xffffffff),
+                  )
+                : Image.asset(
+                    "assets/$icon",
+                    width: width,
+                    color: pageProvider.currentIndex == index
+                        ? primaryColor
+                        : const Color(0xffffffff),
+                  ),
+          ),
+        ),
       );
     }
 
@@ -85,28 +99,23 @@ class _MainPageState extends State<MainPage> {
           padding: EdgeInsets.zero,
           shape: const CircularNotchedRectangle(),
           notchMargin: 12,
+          height: 64,
           clipBehavior: Clip.antiAlias,
           color: transparentColor,
           child: Container(
             decoration: BoxDecoration(
-              color: backgroundColor2,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  spreadRadius: 0,
-                  blurRadius: 8,
-                  offset: const Offset(0, -4),
-                ),
-              ],
+              color: primaryColor,
             ),
-            padding: EdgeInsets.symmetric(horizontal: defaultMargin / 2),
-            height: 75,
+            padding: EdgeInsets.symmetric(horizontal: defaultMargin / 1.5),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 bottomNavItem("icon_home.png", 0),
                 bottomNavItem("icon_chat.png", 1),
+                const SizedBox(
+                  width: 32,
+                ),
                 bottomNavItem(
                   "icon_wishlist.png",
                   2,
