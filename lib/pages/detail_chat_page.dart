@@ -86,11 +86,29 @@ class _DetailChatPageState extends State<DetailChatPage> {
           context: context,
           barrierDismissible: false,
           builder: (context) => Center(
-            child: CircularProgressIndicator(
-                strokeWidth: 4,
-                valueColor: AlwaysStoppedAnimation(
-                  whiteColor,
-                )),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  strokeWidth: 4,
+                  valueColor: AlwaysStoppedAnimation(
+                    whiteColor,
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                DefaultTextStyle(
+                  style: whiteTextStyle.copyWith(
+                    fontSize: 14,
+                  ),
+                  child: const Text(
+                    "Mohon tidak menutup halaman ini",
+                  ),
+                ),
+              ],
+            ),
           ),
         );
 
@@ -129,15 +147,19 @@ class _DetailChatPageState extends State<DetailChatPage> {
           throw Exception('Gagal mengunggah gambar');
         }
       } catch (e) {
+        if (!context.mounted) return;
+        Navigator.pop(context);
+
         if (kDebugMode) {
           print('Error saat mengirim gambar: $e');
         }
+
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: alertColor,
             content: Text(
-              "Gambar gagal diunggah!",
+              "Gambar gagal diunggah! Mohon periksa koneksi internet anda.",
               textAlign: TextAlign.center,
               style: whiteTextStyle,
             ),
@@ -186,46 +208,91 @@ class _DetailChatPageState extends State<DetailChatPage> {
 
     PreferredSizeWidget header() {
       return AppBar(
-        backgroundColor: backgroundColor2,
+        backgroundColor: transparentColor,
         centerTitle: false,
         iconTheme: IconThemeData(
           color: primaryColor,
         ),
         scrolledUnderElevation: 0.0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: widget.user_avatar != null
-                      ? cachedNetworkImageProvider(
-                          imageUrl(widget.user_avatar),
-                        )
-                      : const AssetImage("assets/logo_twt_chat.jpg"),
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            color: backgroundColor2,
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.25),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          width: double.infinity,
+          height: double.infinity,
+          padding: EdgeInsets.only(
+            top: defaultMargin,
+            left: 20,
+            right: 20,
+            bottom: 10,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    size: 24,
+                    color: primaryColor,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: widget.user_avatar != null
+                        ? cachedNetworkImageProvider(
+                            imageUrl(widget.user_avatar),
+                          )
+                        : const AssetImage("assets/logo_twt_chat.jpg"),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              width: 12,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.user_name ?? "Toko Winda Tenun",
-                  style: primaryTextStyle.copyWith(
-                      fontWeight: medium, fontSize: 16),
-                ),
-              ],
-            )
-          ],
+              const SizedBox(
+                width: 12,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.user_name ?? "Toko Winda Tenun",
+                    style: primaryTextStyle.copyWith(
+                      fontWeight: medium,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
-        toolbarHeight: 75,
+        toolbarHeight: 64,
       );
     }
 
@@ -334,9 +401,22 @@ class _DetailChatPageState extends State<DetailChatPage> {
               bottom: 20,
               left: 20,
               right: 20,
-              top: 5,
+              top: 20,
             ),
-            color: transparentColor,
+            decoration: BoxDecoration(
+              color: backgroundColor2,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -352,7 +432,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: backgroundColor2,
+                      color: inputColor,
                       border: Border.all(
                         color: primaryColor,
                       ),
@@ -389,8 +469,8 @@ class _DetailChatPageState extends State<DetailChatPage> {
                       horizontal: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: backgroundColor2,
-                      borderRadius: BorderRadius.circular(12),
+                      color: whiteColor,
+                      borderRadius: BorderRadius.circular(999),
                       border: Border.all(
                         color: primaryColor,
                       ),
@@ -415,11 +495,16 @@ class _DetailChatPageState extends State<DetailChatPage> {
                       horizontal: 12,
                     ),
                     decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Image.asset(
-                      "assets/icon_submit.png",
-                      color: whiteColor,
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        "assets/icon_submit.png",
+                        color: whiteColor,
+                        width: 18,
+                        height: 18,
+                      ),
                     ),
                   ),
                 )
@@ -516,7 +601,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
     }
 
     return Scaffold(
-      backgroundColor: backgroundColor1,
+      backgroundColor: inputColor,
       appBar: header(),
       bottomNavigationBar: chatInput(),
       body: body(),

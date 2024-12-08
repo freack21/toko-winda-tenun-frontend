@@ -208,6 +208,17 @@ class _CartPageState extends State<CartPage> {
           Container(
             decoration: BoxDecoration(
               color: whiteColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
             ),
             padding: EdgeInsets.symmetric(
               vertical: defaultMargin / 2,

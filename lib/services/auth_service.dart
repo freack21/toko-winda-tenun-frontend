@@ -8,7 +8,7 @@ class AuthService {
   Future<UserModel> register({
     String name = "",
     String username = "",
-    String phone = "",
+    String? phone,
     String email = "",
     String password = "",
   }) async {

@@ -81,7 +81,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     inputField(
                       label: "Username",
-                      placeholder: "johndoe17",
+                      placeholder: "johndoe",
                       icon: "icon_username.png",
                       icond: Icons.alternate_email_rounded,
                       controller: usernameController,

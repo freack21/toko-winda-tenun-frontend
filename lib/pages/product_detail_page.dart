@@ -52,9 +52,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       }
       myProduct = NotFoundProductModel();
     }
-    setState(() {
-      isLoadingProduct = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoadingProduct = false;
+      });
+    }
   }
 
   @override
