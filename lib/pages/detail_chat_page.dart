@@ -233,7 +233,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
           width: double.infinity,
           height: double.infinity,
           padding: EdgeInsets.only(
-            top: defaultMargin,
+            top: defaultMargin + 10,
             left: 20,
             right: 20,
             bottom: 10,
@@ -257,11 +257,11 @@ class _DetailChatPageState extends State<DetailChatPage> {
                 },
               ),
               const SizedBox(
-                width: 12,
+                width: 8,
               ),
               Container(
-                width: 50,
-                height: 50,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
@@ -292,7 +292,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
             ],
           ),
         ),
-        toolbarHeight: 64,
+        toolbarHeight: 72,
       );
     }
 
@@ -547,7 +547,12 @@ class _DetailChatPageState extends State<DetailChatPage> {
 
           return ListView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+            padding: const EdgeInsets.only(
+              top: 20,
+              left: 20,
+              right: 20,
+              bottom: 20,
+            ),
             itemCount: chatDocuments.length,
             itemBuilder: (context, index) {
               DateTime currentCreatedAt =
@@ -575,10 +580,22 @@ class _DetailChatPageState extends State<DetailChatPage> {
                           vertical: 4,
                           horizontal: 16,
                         ),
-                        margin: const EdgeInsets.only(bottom: 8),
+                        margin: const EdgeInsets.only(
+                          bottom: 12,
+                          top: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: whiteColor,
                           borderRadius: BorderRadius.circular(32),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.2),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                              offset: const Offset(0, 1),
+                              blurStyle: BlurStyle.inner,
+                            ),
+                          ],
                         ),
                         child: Text(
                           _getTimeAgo(currentCreatedAt),

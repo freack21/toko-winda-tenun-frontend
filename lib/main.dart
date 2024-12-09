@@ -6,7 +6,6 @@ import 'package:frontend/pages/checkout_page.dart';
 import 'package:frontend/pages/edit_profile_page.dart';
 import 'package:frontend/pages/home/main_page.dart';
 import 'package:frontend/pages/menus/wishlist_page.dart';
-import 'package:frontend/pages/order_page.dart';
 import 'package:frontend/pages/privacy_policy_page.dart';
 import 'package:frontend/pages/result_checkout_page.dart';
 import 'package:frontend/pages/sign_in_page.dart';
@@ -27,12 +26,13 @@ void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-      options: FirebaseOptions(
-    appId: dotenv.env["FSTORE_APP_ID"] ?? "-",
-    apiKey: dotenv.env["FSTORE_API_KEY"] ?? "-",
-    messagingSenderId: dotenv.env["FSTORE_SENDER_ID"] ?? "-",
-    projectId: dotenv.env["FSTORE_PROJECT_ID"] ?? "-",
-  ));
+    options: FirebaseOptions(
+      appId: dotenv.env["FSTORE_APP_ID"] ?? "-",
+      apiKey: dotenv.env["FSTORE_API_KEY"] ?? "-",
+      messagingSenderId: dotenv.env["FSTORE_SENDER_ID"] ?? "-",
+      projectId: dotenv.env["FSTORE_PROJECT_ID"] ?? "-",
+    ),
+  );
   await initializeDateFormatting('id_ID', null)
       .then((_) => runApp(const MyApp()));
 }

@@ -56,7 +56,7 @@ class _MainPageState extends State<MainPage> {
     Widget bottomNavItem(
       String icon,
       int index, {
-      double width = 18,
+      double width = 20,
       IconData? icons,
     }) {
       return GestureDetector(
@@ -75,7 +75,7 @@ class _MainPageState extends State<MainPage> {
             child: icons != null
                 ? Icon(
                     icons,
-                    size: width,
+                    size: width + 4,
                     color: pageProvider.currentIndex == index
                         ? primaryColor
                         : const Color(0xffffffff),
@@ -99,7 +99,7 @@ class _MainPageState extends State<MainPage> {
           padding: EdgeInsets.zero,
           shape: const CircularNotchedRectangle(),
           notchMargin: 12,
-          height: 64,
+          height: 72,
           clipBehavior: Clip.antiAlias,
           color: transparentColor,
           child: Container(
@@ -131,6 +131,7 @@ class _MainPageState extends State<MainPage> {
 
     return PopScope(
       canPop: false,
+      // ignore: deprecated_member_use
       onPopInvoked: (didPop) async {
         if (didPop) {
           return;
@@ -144,7 +145,7 @@ class _MainPageState extends State<MainPage> {
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: backgroundColor2,
-            textColor: primaryColor,
+            textColor: blackColor,
           );
         } else {
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -157,7 +158,7 @@ class _MainPageState extends State<MainPage> {
         bottomNavigationBar: customBottomNav(),
         extendBody: true,
         body: PageTransitionSwitcher(
-          duration: const Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 200),
           transitionBuilder: (child, animation, secondaryAnimation) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;

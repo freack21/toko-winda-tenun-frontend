@@ -335,6 +335,7 @@ class chatTile extends StatelessWidget {
                         style: primaryTextStyle.copyWith(
                           fontWeight: unreadMessagesCount > 0 ? bold : medium,
                           fontSize: 15,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -1248,19 +1249,19 @@ class _variationSelectionState extends State<variationSelection> {
 
 Widget brokenImage(
     BuildContext context, Object exception, StackTrace? stackTrace) {
-  return const Center(
-    child: Icon(
-      Icons.broken_image_rounded,
-      color: Color(0xff555555),
+  return Center(
+    child: Image.asset(
+      "assets/img_broken.png",
+      color: whiteColor,
     ),
   );
 }
 
 Widget brokenImageNetwork() {
-  return const Center(
-    child: Icon(
-      Icons.broken_image_rounded,
-      color: Color(0xff555555),
+  return Center(
+    child: Image.asset(
+      "assets/img_broken.png",
+      color: whiteColor,
     ),
   );
 }
@@ -1286,4 +1287,8 @@ Widget cachedNetworkImage(String imageUrl,
 
 ImageProvider cachedNetworkImageProvider(String imageUrl) {
   return CachedNetworkImageProvider(imageUrl);
+}
+
+ImageProvider errorImageProvider() {
+  return const AssetImage("assets/img_broken.png");
 }

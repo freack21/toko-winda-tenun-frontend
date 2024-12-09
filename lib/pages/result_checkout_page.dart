@@ -122,6 +122,7 @@ class ResultCheckoutPage extends StatelessWidget {
 
     return PopScope(
       canPop: false,
+      // ignore: deprecated_member_use
       onPopInvoked: (didPop) {
         Provider.of<PageProvider>(context, listen: false).currentIndex = 0;
         Navigator.pushNamed(context, '/home');

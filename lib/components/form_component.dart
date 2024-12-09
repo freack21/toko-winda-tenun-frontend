@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/theme.dart';
 
+// ignore: camel_case_types
 class inputField extends StatelessWidget {
   final String label;
   final String placeholder;

@@ -52,12 +52,21 @@ class ChatBubble extends StatelessWidget {
           children: [
             Row(
               children: [
-                ClipRRect(
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: transparentColor,
+                    border: Border.all(
+                      color: whiteColor,
+                    ),
                     borderRadius: BorderRadius.circular(12),
-                    child: cachedNetworkImage(
-                      imageUrl(product.galleries?[0]?.url),
-                      width: 70,
-                    )),
+                  ),
+                  child: cachedNetworkImage(
+                    imageUrl(product.galleries![0]!.url),
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 const SizedBox(
                   width: 8,
                 ),
@@ -201,7 +210,7 @@ class ChatBubble extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        margin: EdgeInsets.only(bottom: defaultMargin / 3),
+        margin: const EdgeInsets.only(bottom: 4),
         child: Column(
           crossAxisAlignment:
               isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -226,16 +235,22 @@ class ChatBubble extends StatelessWidget {
                           .containsKey('text'))
                         Container(
                           constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * .7),
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * .75),
                           padding: const EdgeInsets.only(
-                              top: 10, bottom: 6, left: 10, right: 10),
+                            top: 10,
+                            bottom: 6,
+                            left: 10,
+                            right: 10,
+                          ),
                           decoration: BoxDecoration(
                               color: isSender ? whiteColor : primaryColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: const Radius.circular(12),
                                 topRight: Radius.circular((isSender ? 0 : 12)),
-                                bottomLeft:
-                                    Radius.circular((!isSender ? 0 : 12)),
+                                bottomLeft: Radius.circular(
+                                  (!isSender ? 0 : 12),
+                                ),
                                 bottomRight: const Radius.circular(12),
                               ),
                               border: Border.all(

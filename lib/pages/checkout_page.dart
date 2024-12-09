@@ -366,6 +366,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                           onTap: () {
                             Clipboard.setData(ClipboardData(text: norek)).then(
                               (_) {
+                                if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor: primaryColor,

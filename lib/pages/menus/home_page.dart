@@ -96,25 +96,26 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     "Halo, ${user.name.split(" ")[0]}!",
                     style: primaryTextStyle.copyWith(
-                        fontSize: 24, fontWeight: semiBold),
+                        fontSize: 20, fontWeight: semiBold),
                   ),
                   Text(
                     "@${user.username}",
-                    style: subtitleTextStyle.copyWith(fontSize: 16),
+                    style: subtitleTextStyle.copyWith(fontSize: 12),
                   )
                 ],
               ),
             ),
             Container(
-              width: 54,
-              height: 54,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: cachedNetworkImageProvider(
-                      user.avatar,
-                    ),
-                  )),
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: cachedNetworkImageProvider(
+                    user.avatar,
+                  ),
+                ),
+              ),
             )
           ],
         ),
@@ -135,22 +136,31 @@ class _HomePageState extends State<HomePage> {
                 await _setCategories();
               },
               style: TextButton.styleFrom(
-                  backgroundColor: pageProvider.currentCategoryIndex == index
-                      ? primaryColor
-                      : transparentColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: pageProvider.currentCategoryIndex == index
-                          ? BorderSide.none
-                          : BorderSide(color: secondaryTextColor)),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 12)),
+                backgroundColor: pageProvider.currentCategoryIndex == index
+                    ? primaryColor
+                    : transparentColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: pageProvider.currentCategoryIndex == index
+                      ? BorderSide.none
+                      : BorderSide(color: secondaryTextColor),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 8,
+                ),
+              ),
               child: Text(
                 title,
                 style: (pageProvider.currentCategoryIndex == index
-                    ? whiteTextStyle.copyWith(fontWeight: medium, fontSize: 13)
+                    ? whiteTextStyle.copyWith(
+                        fontWeight: medium,
+                        fontSize: 12,
+                      )
                     : secondaryTextStyle.copyWith(
-                        fontWeight: light, fontSize: 13)),
+                        fontWeight: light,
+                        fontSize: 12,
+                      )),
               ),
             ),
             const SizedBox(
